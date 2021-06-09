@@ -58,7 +58,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	var body_velocity = p_linear_velocity * get_physics_process_delta_time()
 	var velocity = p_linear_velocity
 	var velocity_normalized = velocity.normalized()
-	var motion = ( floor_velocity + velocity + accumated_gravity) * get_physics_process_delta_time()
+	var original_motion = (floor_velocity + velocity + accumated_gravity) * get_physics_process_delta_time()
+	var motion = original_motion
 	
 	var prev_on_floor = on_floor
 	on_floor = false
@@ -77,11 +78,11 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 		if collision:
 			motion = collision.remainder
 			
-			if constant_speed and first_collision:
+			if constant_speed and first_collision and motion != Vector2.ZERO:
 				var slide = motion.slide(collision.normal).normalized()
-				if slide != Vector2.ZERO:
-					motion = slide * (body_velocity.length() - collision.travel.length())
 				first_collision = false
+				if slide != Vector2.ZERO:
+					motion = slide * (original_motion.length() - collision.travel.length())
 				
 			if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 				on_floor = true
@@ -101,7 +102,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				if move_on_floor_only and prev_on_floor and motion.dot(collision.normal) < -0.5 :
 					motion = ( floor_velocity + accumated_gravity) * get_physics_process_delta_time()
 				on_wall = true
-		
+
 			motion = motion.slide(collision.normal)
 
 		if  not collision or motion == Vector2():
@@ -110,6 +111,12 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 		--p_max_slides
 	
 	return velocity
+
+func get_state_str():
+	if on_ceiling: return "ceil"
+	if on_wall: return "wall"
+	if on_floor: return "floor"
+	return "air"
 	
 func get_velocity_str():
 	return "Velocity " + str(velocity)

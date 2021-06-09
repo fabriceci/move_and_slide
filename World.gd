@@ -22,7 +22,7 @@ func _physics_process(delta: float) -> void:
 	$CanvasLayer/Control/Label.text = "Position " + str($Player.global_position) + '\n'
 	$CanvasLayer/Control/Label.text += "Linear Vel " + str(linear_vel) + ' Length %.3f \n' % linear_vel.length()
 	$CanvasLayer/Control/Label.text += $Player.get_velocity_str() + '\n'
-	$CanvasLayer/Control/Label.text += "Is on floor: " + str($Player.on_floor or $Player.is_on_floor())
+	$CanvasLayer/Control/Label.text += "State: " + $Player.get_state_str()
 	if $Player.raycast.is_colliding():
 		$CanvasLayer/Control/Label.text += "\nSlope angle: %.3f°" % rad2deg(acos($Player.raycast.get_collision_normal().dot(Vector2.UP)))
 	if Engine.time_scale != 1.0:
