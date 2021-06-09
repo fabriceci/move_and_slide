@@ -99,7 +99,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				on_ceiling = true
 				velocity.y = 0
 			else:
-				if move_on_floor_only and prev_on_floor and motion.dot(collision.normal) < -0.5 :
+				if move_on_floor_only and prev_on_floor and original_motion.normalized().dot(collision.normal) < -0.5 :
 					motion = ( floor_velocity + accumated_gravity) * get_physics_process_delta_time()
 				on_wall = true
 
