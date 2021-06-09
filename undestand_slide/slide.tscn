@@ -1,0 +1,153 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://new_dynamicfont.tres" type="DynamicFont" id=1]
+[ext_resource path="res://undestand_slide/Node2D.gd" type="Script" id=2]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+margin_left = 3.27228
+margin_top = 5.45383
+margin_right = 54.2723
+margin_bottom = 26.4538
+rect_pivot_offset = Vector2( -15.9516, -6.74979 )
+custom_fonts/font = ExtResource( 1 )
+text = "Velocity"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextEdit" type="TextEdit" parent="CanvasLayer"]
+margin_left = 99.0
+margin_top = 1.0
+margin_right = 396.0
+margin_bottom = 35.0
+rect_pivot_offset = Vector2( 19.4496, 24.1325 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label2" type="Label" parent="CanvasLayer"]
+margin_left = 2.61008
+margin_top = 40.5491
+margin_right = 53.6101
+margin_bottom = 61.5491
+rect_pivot_offset = Vector2( -15.9516, -6.74979 )
+custom_fonts/font = ExtResource( 1 )
+text = "Normal"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label3" type="Label" parent="CanvasLayer"]
+margin_left = 8.99625
+margin_top = 109.521
+margin_right = 68.9962
+margin_bottom = 130.521
+rect_pivot_offset = Vector2( -69.1665, 28.1099 )
+custom_fonts/font = ExtResource( 1 )
+text = "Slide"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label6" type="Label" parent="CanvasLayer"]
+margin_left = 6.0
+margin_top = 78.0
+margin_right = 66.0
+margin_bottom = 99.0
+rect_pivot_offset = Vector2( -69.1665, 28.1099 )
+custom_fonts/font = ExtResource( 1 )
+text = "prev "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label7" type="Label" parent="CanvasLayer"]
+margin_left = 424.793
+margin_top = 6.15294
+margin_right = 484.793
+margin_bottom = 27.1529
+rect_pivot_offset = Vector2( -69.1665, 28.1099 )
+custom_fonts/font = ExtResource( 1 )
+text = "Zoom "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label4" type="Label" parent="CanvasLayer"]
+margin_left = 104.772
+margin_top = 110.872
+margin_right = 289.772
+margin_bottom = 131.872
+rect_pivot_offset = Vector2( -57.3004, 9.95743 )
+custom_fonts/font = ExtResource( 1 )
+text = "Slide"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label5" type="Label" parent="CanvasLayer"]
+margin_left = 97.1089
+margin_top = 81.4952
+margin_right = 282.109
+margin_bottom = 102.495
+rect_pivot_offset = Vector2( -57.3004, 9.95743 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LabelMagnitude" type="Label" parent="CanvasLayer"]
+margin_left = 10.1362
+margin_top = 141.998
+margin_right = 195.136
+margin_bottom = 162.998
+rect_pivot_offset = Vector2( -57.3004, 9.95743 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextEdit2" type="TextEdit" parent="CanvasLayer"]
+margin_left = 101.0
+margin_top = 39.0
+margin_right = 397.0
+margin_bottom = 77.0
+rect_pivot_offset = Vector2( 19.4496, 24.1325 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="CanvasLayer"]
+margin_left = 537.277
+margin_top = 33.1473
+margin_right = 618.277
+margin_bottom = 60.1473
+custom_fonts/font = ExtResource( 1 )
+text = "update"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer"]
+margin_left = 414.803
+margin_top = 33.8525
+margin_right = 501.803
+margin_bottom = 62.8525
+min_value = 1.0
+value = 30.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="CanvasLayer/Button" to="." method="_on_Button_pressed"]
+[connection signal="value_changed" from="CanvasLayer/HSlider" to="." method="_on_HSlider_value_changed"]
