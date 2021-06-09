@@ -10,7 +10,7 @@ size = 15
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=2]
-size = 14
+size = 12
 font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=3]
@@ -64,8 +64,9 @@ margin_bottom = 64.2221
 custom_fonts/font = SubResource( 2 )
 text = "SHIFT to run on floor
 TAB to enter in slowmo
-Red line = floor normal
-Green line = vel"
+Lines: red -> last normal
+       green -> velocity
+	       orange -> last motion"
 __meta__ = {
 "_edit_use_anchors_": false
 }

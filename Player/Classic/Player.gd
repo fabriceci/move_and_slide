@@ -30,7 +30,6 @@ func _physics_process(delta: float) -> void:
 		last_normal = get_floor_normal()
 	else:
 		velocity = gd_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true)
-		last_normal = floor_normal
 	
 	if util_on_floor():
 		velocity.y = 0
@@ -72,6 +71,7 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 			motion = Vector2() #clear because no collision happened and motion completed
  
 		if collision :
+			last_normal = collision.normal # debug
 			found_collision = true
 			motion = collision.remainder;
  

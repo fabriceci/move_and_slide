@@ -9,6 +9,7 @@ var RUN_SPEED := 1300
 var AIR_FRICTION := 1000
 
 var last_normal = Vector2.ZERO
+var last_motion = Vector2.ZERO
 var constant_speed = false
 var move_on_floor_only = true
 
@@ -28,13 +29,13 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
 	velocity = custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, gravity, move_on_floor_only, constant_speed)
-	last_normal = floor_normal
 
 func _draw():
 	var icon_pos = $icon.position
 	icon_pos.y -= 50
 	draw_line(icon_pos, icon_pos + velocity.normalized() * 50, Color.green, 1.5)
 	draw_line(icon_pos, icon_pos + last_normal * 50, Color.red, 1.5)
+	draw_line(icon_pos, icon_pos + last_motion * 50, Color.orange, 1.5)
 
 var on_floor := false
 var on_floor_body = RID()
@@ -43,7 +44,6 @@ var on_wall = false
 var floor_normal := Vector2()
 var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
-var cbody
 var accumated_gravity = Vector2.ZERO
 
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, gravity: Vector2, move_on_floor_only: bool, constant_speed: bool):
@@ -77,7 +77,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 
 		if collision:
 			motion = collision.remainder
-			
+			last_normal = collision.normal # for debug
 			if constant_speed and first_collision and motion != Vector2.ZERO:
 				var slide = motion.slide(collision.normal).normalized()
 				first_collision = false
@@ -104,7 +104,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				on_wall = true
 
 			motion = motion.slide(collision.normal)
-
+		if motion != Vector2(): last_motion = motion.normalized() # debug
+			
 		if  not collision or motion == Vector2():
 			break
 
