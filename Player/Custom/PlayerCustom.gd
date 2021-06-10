@@ -49,7 +49,7 @@ var accumated_gravity = Vector2.ZERO
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, gravity: Vector2, move_on_floor_only: bool, constant_speed: bool):
 	gravity = gravity * get_physics_process_delta_time()
 
-	if p_linear_velocity.y < 0:
+	if p_linear_velocity.y < 0: # to do: do not use y and same below
 		accumated_gravity.y = 0
 		p_linear_velocity.y =  min(0, p_linear_velocity.y + gravity.y)
 	else:
@@ -58,7 +58,14 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	var body_velocity = p_linear_velocity * get_physics_process_delta_time()
 	var velocity = p_linear_velocity
 	var velocity_normalized = velocity.normalized()
-	var original_motion = (floor_velocity + velocity + accumated_gravity) * get_physics_process_delta_time()
+	
+	var current_floor_velocity := floor_velocity
+	if on_floor and on_floor_body:
+		var bs := Physics2DServer.body_get_direct_state(on_floor_body)
+		if bs:
+			current_floor_velocity = bs.linear_velocity
+			
+	var original_motion = (current_floor_velocity + velocity + accumated_gravity) * get_physics_process_delta_time()
 	var motion = original_motion
 	
 	var prev_on_floor = on_floor
@@ -68,9 +75,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
 	
-	var cancel_motion = false
 	var first_collision = true
-	var need_wall_correction = true
 	while (p_max_slides):
 	
 		var collision := move_and_collide(motion, p_infinite_inertia)
@@ -83,27 +88,34 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				first_collision = false
 				if slide != Vector2.ZERO:
 					motion = slide * (original_motion.length() - collision.travel.length())
-				
-			if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
-				on_floor = true
-				floor_normal = collision.normal
-				floor_velocity = collision.collider_velocity
-				if p_stop_on_slope:
-					if p_linear_velocity == Vector2.ZERO:
-						position -= collision.travel.slide(p_up_direction)
-						motion = Vector2.ZERO
-
-				velocity.y = 0
+			if p_up_direction == Vector2():
+				# all is a wall
+				on_wall = true;
 				accumated_gravity = Vector2.ZERO
-			elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
-				on_ceiling = true
-				velocity.y = 0
-			else:
-				if move_on_floor_only and prev_on_floor and original_motion.normalized().dot(collision.normal) < -0.5 :
-					motion = ( floor_velocity + accumated_gravity) * get_physics_process_delta_time()
-				on_wall = true
+			else :
+				if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+					on_floor = true
+					floor_normal = collision.normal
+					floor_velocity = collision.collider_velocity
+					if p_stop_on_slope:
+						if p_linear_velocity == Vector2.ZERO:
+							position -= collision.travel.slide(p_up_direction)
+							motion = Vector2.ZERO
+
+					velocity.y = 0
+					accumated_gravity = Vector2.ZERO
+				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
+					on_ceiling = true
+					velocity.y = 0
+				else:
+					if not move_on_floor_only:
+						accumated_gravity = Vector2.ZERO
+					if move_on_floor_only and prev_on_floor and original_motion.normalized().dot(collision.normal) < -0.5 :
+						motion = ( floor_velocity + accumated_gravity) * get_physics_process_delta_time()
+					on_wall = true
 
 			motion = motion.slide(collision.normal)
+
 		if motion != Vector2(): last_motion = motion.normalized() # debug
 			
 		if  not collision or motion == Vector2():
