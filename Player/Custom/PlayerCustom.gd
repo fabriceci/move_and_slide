@@ -83,7 +83,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 		if collision:
 			motion = collision.remainder
 			last_normal = collision.normal # for debug
-			if constant_speed and first_collision and motion != Vector2.ZERO:
+			var dot_velocity = p_linear_velocity.normalized().dot(last_normal) # only apply constant speed if the overall direction is more close then the slope than the ground
+			if constant_speed and first_collision and motion != Vector2.ZERO and dot_velocity < 0 and dot_velocity > -0.72:
 				var slide = motion.slide(collision.normal).normalized()
 				first_collision = false
 				if slide != Vector2.ZERO:
