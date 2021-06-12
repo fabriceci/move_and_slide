@@ -54,3 +54,7 @@ func set_mode(index: int):
 			remove_child(get_node("Player"))
 		add_child(instance)
 		instance.position = player_position
+
+func _on_Button_pressed() -> void:
+	var player = get_node("Player")
+	player.only_follow_platform  = not player.only_follow_platform

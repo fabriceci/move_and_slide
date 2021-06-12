@@ -12,6 +12,7 @@ var last_normal = Vector2.ZERO
 var last_motion = Vector2.ZERO
 var CONSTANT_SPEED = false
 var MOVE_ON_FLOOR_ONLY = true
+var only_follow_platform = false
 
 func _process(_delta):
 	update()
@@ -72,6 +73,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	on_air = false
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
+	if only_follow_platform:
+		return Vector2.ZERO
 	platform_ref = null
 	
 	var first_collision = true
@@ -100,8 +103,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					platform_ref = collision.collider
 					
 					if p_stop_on_slope:
-						if (motion.normalized() + p_up_direction).length() < 0.01 and collision.travel.length() < 1 :
-							position.y = previous_pos.y #position -= collision.travel.slide(p_up_direction)
+						if (original_motion.normalized() + p_up_direction).length() < 0.01 and collision.travel.length() < 1 :
+							position = previous_pos #position -= collision.travel.slide(p_up_direction)
 							motion = Vector2.ZERO
 
 					p_linear_velocity.y = 0
