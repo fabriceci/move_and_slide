@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://Platform/KinematicBody2D.gd" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 225.339, 30.9453 )
@@ -22,10 +23,13 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ), Vector2( 300, 0 ) ]
 }
 
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 64.8931, 68.5309 )
+
 [node name="Container" type="Node2D"]
 
 [node name="KinematicBody2D" type="KinematicBody2D" parent="."]
-motion/sync_to_physics = true
+script = ExtResource( 2 )
 
 [node name="icon" type="Sprite" parent="KinematicBody2D"]
 scale = Vector2( 7, 1 )
@@ -38,3 +42,8 @@ shape = SubResource( 1 )
 autoplay = "Move"
 playback_process_mode = 0
 anims/Move = SubResource( 2 )
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="KinematicBody2D"]
+position = Vector2( 21.3487, -25.8648 )
+rotation = 0.785398
+shape = SubResource( 3 )

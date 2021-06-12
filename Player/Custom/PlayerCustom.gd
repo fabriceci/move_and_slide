@@ -38,14 +38,14 @@ func _draw():
 	draw_line(icon_pos, icon_pos + last_motion * 50, Color.orange, 1.5)
 
 var on_floor := false
-var on_floor_body = RID()
+var platform_ref = null
 var on_ceiling := false
 var on_wall = false
+var on_air = false
 var floor_normal := Vector2()
 var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
 var accumated_gravity = Vector2.ZERO
-
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, gravity: Vector2, move_on_floor_only: bool, constant_speed: bool):
 	gravity = gravity * get_physics_process_delta_time()
 
@@ -55,26 +55,29 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	else:
 		accumated_gravity += gravity
 
-	var body_velocity = p_linear_velocity * get_physics_process_delta_time()
 	var velocity = p_linear_velocity
 	var velocity_normalized = velocity.normalized()
 	
 	var current_floor_velocity := floor_velocity
-	if on_floor and on_floor_body:
-		var bs := Physics2DServer.body_get_direct_state(on_floor_body)
-		if bs:
-			current_floor_velocity = bs.linear_velocity
+	if(platform_ref != null and platform_ref.has_method("get_velocity")):
+		current_floor_velocity = platform_ref.get_velocity()
+		platform_ref = null
+
+	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
+		move_and_collide(current_floor_velocity *  get_physics_process_delta_time(), p_infinite_inertia)
 			
-	var original_motion = (current_floor_velocity + velocity + accumated_gravity) * get_physics_process_delta_time()
+	var original_motion = (velocity + accumated_gravity) * get_physics_process_delta_time()
 	var motion = original_motion
 	
 	var prev_on_floor = on_floor
 	on_floor = false
 	on_ceiling = false
 	on_wall = false
+	on_air = false
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
 	
+	var previous_pos = position
 	var first_collision = true
 	while (p_max_slides):
 	
@@ -98,9 +101,11 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_floor = true
 					floor_normal = collision.normal
 					floor_velocity = collision.collider_velocity
+					platform_ref = collision.collider
+					
 					if p_stop_on_slope:
-						if p_linear_velocity == Vector2.ZERO:
-							position -= collision.travel.slide(p_up_direction)
+						if (motion.normalized() + p_up_direction).length() < 0.01 and collision.travel.length() < 1 :
+							position.y = previous_pos.y #position -= collision.travel.slide(p_up_direction)
 							motion = Vector2.ZERO
 
 					velocity.y = 0
@@ -116,8 +121,10 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_wall = true
 
 			motion = motion.slide(collision.normal)
-
-		if motion != Vector2(): last_motion = motion.normalized() # debug
+		
+		# debug
+		if not collision: on_air = true
+		if motion != Vector2(): last_motion = motion.normalized() 
 			
 		if  not collision or motion == Vector2():
 			break
@@ -130,7 +137,8 @@ func get_state_str():
 	if on_ceiling: return "ceil"
 	if on_wall: return "wall"
 	if on_floor: return "floor"
-	return "air"
+	if on_air: return "air"
+	return "unknow"
 	
 func get_velocity_str():
 	return "Velocity " + str(velocity)
