@@ -17,7 +17,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if not $Player: return
-	var linear_vel : Vector2 = player_position - $Player.global_position
+	var linear_vel : Vector2 = (player_position - $Player.global_position) / get_physics_process_delta_time()
 	player_position = $Player.global_position
 	$CanvasLayer/Control/Label.text = "Position " + str($Player.global_position) + '\n'
 	$CanvasLayer/Control/Label.text += "Linear Vel " + str(linear_vel) + ' Length %.3f \n' % linear_vel.length()

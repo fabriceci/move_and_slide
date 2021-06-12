@@ -58,7 +58,6 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	var current_floor_velocity := floor_velocity
 	if(platform_ref != null and platform_ref.has_method("get_velocity")):
 		current_floor_velocity = platform_ref.get_velocity()
-		platform_ref = null
 
 	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
 		move_and_collide(current_floor_velocity *  get_physics_process_delta_time(), p_infinite_inertia)
@@ -73,6 +72,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	on_air = false
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
+	platform_ref = null
 	
 	var first_collision = true
 	while (p_max_slides):
