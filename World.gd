@@ -15,7 +15,7 @@ func _ready() -> void:
 	$CanvasLayer/Control/ItemList.select(0)
 	set_mode(0)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if not $Player: return
 	var linear_vel : Vector2 = player_position - $Player.global_position
 	player_position = $Player.global_position
@@ -28,7 +28,7 @@ func _physics_process(delta: float) -> void:
 	if Engine.time_scale != 1.0:
 		$CanvasLayer/Control/Label.text += "\nTime scale : %.3f" % Engine.time_scale
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed('slow'):
 		slow_mo_idx += 1
 		Engine.time_scale = slow_mo[slow_mo_idx % slow_mo.size()]
@@ -47,9 +47,10 @@ func set_mode(index: int):
 		if index == 2 or index == 3:
 			instance = PlayerClassic.instance()
 		if index == 1:
-			instance.constant_speed = true
+			instance.CONSTANT_SPEED = true
 		if index == 3:
 			instance.use_build_in = true
-		remove_child(get_node("Player"))
+		if has_node("Player"):
+			remove_child(get_node("Player"))
 		add_child(instance)
 		instance.position = player_position

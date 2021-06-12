@@ -102,11 +102,11 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 		if  not found_collision or motion == Vector2():
 			break
  
-		--p_max_slides
+		p_max_slides -= 1
  
 	return body_velocity
 
-func _process(delta):
+func _process(_delta):
 	update()
 	
 func _draw():
