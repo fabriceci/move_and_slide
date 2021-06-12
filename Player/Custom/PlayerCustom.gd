@@ -30,6 +30,10 @@ func _physics_process(_delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
 	velocity = custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, GRAVITY_FORCE, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED)
+	
+	if on_ceiling or on_floor:
+		velocity.y = 0
+	
 
 func _draw():
 	var icon_pos = $icon.position
@@ -107,11 +111,9 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 							position = previous_pos #position -= collision.travel.slide(p_up_direction)
 							motion = Vector2.ZERO
 
-					p_linear_velocity.y = 0
 					accumated_gravity = Vector2.ZERO
 				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
 					on_ceiling = true
-					p_linear_velocity.y = 0
 				else:
 					if not move_on_floor_only:
 						accumated_gravity = Vector2.ZERO
@@ -129,7 +131,6 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			break
 
 		p_max_slides -= 1
-	
 	return p_linear_velocity
 
 func get_state_str():
