@@ -77,10 +77,9 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
 	
-	var previous_pos = position
 	var first_collision = true
 	while (p_max_slides):
-	
+		var previous_pos = position
 		var collision := move_and_collide(motion, p_infinite_inertia)
 
 		if collision:
