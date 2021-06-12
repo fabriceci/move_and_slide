@@ -31,6 +31,9 @@ func _physics_process(_delta: float) -> void:
 
 	velocity = custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, GRAVITY_FORCE, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED)
 	
+	#if velocity.y >= 0:
+	#	custom_snap(Vector2.DOWN * 50, Vector2.UP, true, deg2rad(45), true)
+	
 	if on_ceiling or on_floor:
 		velocity.y = 0
 	
@@ -51,6 +54,8 @@ var floor_normal := Vector2()
 var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
 var accumated_gravity = Vector2.ZERO
+var prev_on_floor = false
+
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, gravity: Vector2, move_on_floor_only: bool, constant_speed: bool):
 	gravity = gravity * get_physics_process_delta_time()
 
@@ -70,7 +75,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	var original_motion = (p_linear_velocity + accumated_gravity) * get_physics_process_delta_time()
 	var motion = original_motion
 	
-	var prev_on_floor = on_floor
+	prev_on_floor = on_floor
 	on_floor = false
 	on_ceiling = false
 	on_wall = false
@@ -132,6 +137,24 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 
 		p_max_slides -= 1
 	return p_linear_velocity
+
+func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool, p_floor_max_angle: float,  p_infinite_inertia: bool):
+	if p_up_direction == Vector2.ZERO or on_floor or not prev_on_floor: return
+	
+	var collision := move_and_collide(p_snap, p_infinite_inertia, false, true)
+	if collision:
+		if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+			on_floor = true
+			floor_normal = collision.normal
+			floor_velocity = collision.collider_velocity
+			platform_ref = collision.collider
+			var travelled = collision.travel
+			if p_stop_on_slope:
+				# move and collide may stray the object a bit because of pre un-stucking,
+				# so only ensure that motion happens on floor direction in this case.
+				travelled = p_up_direction * p_up_direction.dot(travelled);
+			
+			position += travelled
 
 func get_state_str():
 	if on_ceiling: return "ceil"
