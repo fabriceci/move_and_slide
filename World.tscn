@@ -84,18 +84,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Button" parent="CanvasLayer/Control"]
-margin_left = 468.216
-margin_top = 87.5441
-margin_right = 532.216
-margin_bottom = 107.544
-focus_mode = 0
-enabled_focus_mode = 0
-text = "Only Follow"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Level" type="Node2D" parent="."]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="Level"]
@@ -142,4 +130,3 @@ shape = SubResource( 4 )
 position = Vector2( 400, -300 )
 
 [connection signal="item_selected" from="CanvasLayer/Control/ItemList" to="." method="_on_ItemList_item_selected"]
-[connection signal="pressed" from="CanvasLayer/Control/Button" to="." method="_on_Button_pressed"]

@@ -45,6 +45,11 @@ playback_process_mode = 0
 anims/Move = SubResource( 2 )
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="KinematicBody2D"]
-position = Vector2( 21.3487, -25.8648 )
+position = Vector2( -63.6656, -24.5154 )
 rotation = 0.785398
+shape = SubResource( 3 )
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="KinematicBody2D"]
+position = Vector2( 260, -17.768 )
+rotation = 3.49066
 shape = SubResource( 3 )
