@@ -72,7 +72,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			current_floor_velocity = bs.linear_velocity
 
 	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
-		move_and_collide(current_floor_velocity *  get_physics_process_delta_time(), p_infinite_inertia)
+		position += current_floor_velocity * get_physics_process_delta_time()
 			
 	var original_motion = (p_linear_velocity + accumated_gravity) * get_physics_process_delta_time()
 	var motion = original_motion
