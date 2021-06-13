@@ -12,10 +12,10 @@ func _ready() -> void:
 	
 func _process(delta: float) -> void:
 	update()
-	cpt += delta
-	if cpt > 5:
-		cpt=0
-		v_vel.y += 0.5
+	#cpt += delta
+	#if cpt > 5:
+	#	cpt=0
+	#	v_vel.y += 0.5
 	
 func _draw():
 	draw_line(Vector2(0, -1000), Vector2(0, 1000), Color.white, 0.5)
@@ -25,7 +25,9 @@ func _draw():
 
 	var result = v_vel.slide(v_normal)
 	$CanvasLayer/Label4.text = String(result) + " normalized : " + str(result.normalized())
-	$CanvasLayer/LabelMagnitude.text = "Dot vel/norm " + str(v_vel.normalized().dot(v_normal)) + " Deg " + str(rad2deg(acos(v_vel.normalized().dot(v_normal))))
+	
+	$CanvasLayer/LabelMagnitude.text = "Result length " + str(result.length()) + " Vel length :" + str(v_vel.length())
+	$CanvasLayer/LabelMagnitude.text += "\nDot vel/norm " + str(v_vel.normalized().dot(v_normal)) + " Deg " + str(rad2deg(acos(v_vel.normalized().dot(v_normal))))
 	$CanvasLayer/LabelMagnitude.text += "\nDot up/normal" + str(v_vel.normalized().dot(Vector2(0, -1))) + " Deg " + str(rad2deg(acos(v_vel.normalized().dot(Vector2(0, -1)))))
 	$CanvasLayer/LabelMagnitude.text += "\nmagn vel : " + str(v_vel.length()) 
 	$CanvasLayer/LabelMagnitude.text += "\nmagn normal * dot " + str(v_normal_dot.length())
