@@ -46,7 +46,7 @@ func _draw():
 	draw_line(icon_pos, icon_pos + last_motion * 50, Color.orange, 1.5)
 
 var on_floor := false
-var platform_ref = null
+var on_floor_body:=  RID()
 var on_ceiling := false
 var on_wall = false
 var on_air = false
@@ -66,8 +66,10 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 		accumated_gravity += gravity
 
 	var current_floor_velocity := floor_velocity
-	if(platform_ref != null and platform_ref.has_method("get_velocity")):
-		current_floor_velocity = platform_ref.get_velocity()
+	if on_floor and on_floor_body:
+		var bs := Physics2DServer.body_get_direct_state(on_floor_body)
+		if bs:
+			current_floor_velocity = bs.linear_velocity
 
 	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
 		move_and_collide(current_floor_velocity *  get_physics_process_delta_time(), p_infinite_inertia)
@@ -77,6 +79,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	
 	prev_on_floor = on_floor
 	on_floor = false
+	on_floor_body = RID()
 	on_ceiling = false
 	on_wall = false
 	on_air = false
@@ -84,7 +87,6 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	floor_velocity = Vector2()
 	if only_follow_platform:
 		return Vector2.ZERO
-	platform_ref = null
 	
 	var first_collision = true
 	while (p_max_slides):
@@ -109,7 +111,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_floor = true
 					floor_normal = collision.normal
 					floor_velocity = collision.collider_velocity
-					platform_ref = collision.collider
+					var collision_object := collision.collider as CollisionObject2D
+					on_floor_body = collision_object.get_rid()
 					
 					if p_stop_on_slope:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 and collision.travel.length() < 1 :
@@ -147,7 +150,8 @@ func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: boo
 			on_floor = true
 			floor_normal = collision.normal
 			floor_velocity = collision.collider_velocity
-			platform_ref = collision.collider
+			var collision_object := collision.collider as CollisionObject2D
+			on_floor_body = collision_object.get_rid()
 			var travelled = collision.travel
 			if p_stop_on_slope:
 				# move and collide may stray the object a bit because of pre un-stucking,

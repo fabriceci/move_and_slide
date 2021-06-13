@@ -29,6 +29,7 @@ extents = Vector2( 64.8931, 68.5309 )
 [node name="Container" type="Node2D"]
 
 [node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+motion/sync_to_physics = true
 script = ExtResource( 2 )
 
 [node name="icon" type="Sprite" parent="KinematicBody2D"]
