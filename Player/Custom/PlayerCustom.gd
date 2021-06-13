@@ -101,7 +101,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				var slide = motion.slide(collision.normal).normalized()
 				first_collision = false
 				if slide != Vector2.ZERO:
-					motion = slide * (original_motion.length() - collision.travel.length())
+					motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.length())  # alternative use original_motion.length() to also account de y value
 			if p_up_direction == Vector2():
 				# all is a wall
 				on_wall = true;
