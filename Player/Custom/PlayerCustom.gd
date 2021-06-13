@@ -115,8 +115,11 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_floor_body = collision_object.get_rid()
 					
 					if p_stop_on_slope:
-						if (original_motion.normalized() + p_up_direction).length() < 0.01 and collision.travel.length() < 1 :
-							position = previous_pos #position -= collision.travel.slide(p_up_direction)
+						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
+							if collision.travel.length() < 1: # more precise but maybe useless
+								position = previous_pos #
+							else:
+								position -= collision.travel.slide(p_up_direction)
 							motion = Vector2.ZERO
 
 					accumated_gravity = Vector2.ZERO
