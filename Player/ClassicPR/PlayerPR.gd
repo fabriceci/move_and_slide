@@ -1,7 +1,7 @@
 extends KinematicBody2D
+signal follow_platform(message)
 
 onready var raycast := $RayCast2D
-var use_build_in = false
 
 var velocity := Vector2(0, 0)
 var gravity := Vector2(0, 2000)
@@ -11,11 +11,14 @@ var AIR_FRICTION := 1000
 
 var last_normal = Vector2.ZERO
 
+var cpt := 0.0
 func _physics_process(delta: float) -> void:
 	
 	velocity.y += gravity.y * delta
-	
-	if  Input.is_action_just_pressed('ui_accept'):
+	cpt += delta
+	if on_floor and  Input.is_action_just_pressed('ui_accept'):
+		
+		print("JUMP : " + str(int(cpt)))
 		velocity.y += -1000
 		
 	var speed = RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else NORMAL_SPEED
@@ -25,11 +28,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
-	if use_build_in:
-		velocity = move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true)
-		last_normal = get_floor_normal()
-	else:
-		velocity = gd_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true)
+	velocity = gd_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true)
 	
 	if util_on_floor():
 		velocity.y = 0
@@ -53,7 +52,13 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 		if bs:
 			current_floor_velocity = bs.linear_velocity
  
-	var motion: Vector2 = (current_floor_velocity + p_linear_velocity) * get_physics_process_delta_time()
+	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
+		position += current_floor_velocity * get_physics_process_delta_time()
+		emit_signal("follow_platform", str(current_floor_velocity * get_physics_process_delta_time()))
+	else:
+		emit_signal("follow_platform", "/")
+	
+	var motion: Vector2 = (p_linear_velocity) * get_physics_process_delta_time()
  
 	on_floor = false
 	on_floor_body = RID()
@@ -106,7 +111,6 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 			print("air")
 		else:
 			print("--")
-			
 		p_max_slides -= 1
  
 	return body_velocity

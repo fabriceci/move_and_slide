@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://World.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=3]
@@ -23,6 +23,40 @@ extents = Vector2( 37.4828, 32.2232 )
 [sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 155.121, 22.7225 )
 
+[sub_resource type="Animation" id=6]
+resource_name = "Move"
+length = 2.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, -500 ) ]
+}
+
+[sub_resource type="Animation" id=7]
+resource_name = "Move"
+length = 2.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( -500, -500 ) ]
+}
+
 [node name="World" type="Node2D"]
 script = ExtResource( 1 )
 
@@ -36,11 +70,11 @@ __meta__ = {
 }
 
 [node name="ItemList" type="ItemList" parent="CanvasLayer/Control"]
-margin_left = 827.739
-margin_top = 24.4637
-margin_right = 1002.74
-margin_bottom = 111.464
-items = [ "Custom", null, false, "Custom + const speed", null, false, "Classic GDScript", null, false, "Classic C++", null, false ]
+margin_left = 828.0
+margin_top = 24.0
+margin_right = 1003.0
+margin_bottom = 131.0
+items = [ "Custom", null, false, "Custom + const speed", null, false, "Classic GDScript", null, false, "Classic C++", null, false, "Classic PR (platform)", null, false ]
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -127,6 +161,24 @@ texture = ExtResource( 3 )
 shape = SubResource( 4 )
 
 [node name="Platform" parent="Level" instance=ExtResource( 5 )]
-position = Vector2( 400, -300 )
+position = Vector2( -297.29, -380.845 )
+
+[node name="Platform2" parent="Level" instance=ExtResource( 5 )]
+position = Vector2( 1075.39, -18.7261 )
+
+[node name="AnimationPlayer" parent="Level/Platform2/KinematicBody2D" index="2"]
+anims/Move = SubResource( 6 )
+
+[node name="Platform3" parent="Level" instance=ExtResource( 5 )]
+position = Vector2( -851.894, -125.343 )
+
+[node name="KinematicBody2D" parent="Level/Platform3" index="0"]
+position = Vector2( -300, -300 )
+
+[node name="AnimationPlayer" parent="Level/Platform3/KinematicBody2D" index="2"]
+anims/Move = SubResource( 7 )
 
 [connection signal="item_selected" from="CanvasLayer/Control/ItemList" to="." method="_on_ItemList_item_selected"]
+
+[editable path="Level/Platform2"]
+[editable path="Level/Platform3"]
