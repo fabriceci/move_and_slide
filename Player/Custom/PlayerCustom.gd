@@ -55,8 +55,7 @@ var on_air = false
 var floor_normal := Vector2()
 var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
-var accumated_gravity = Vector2.ZERO
-var prev_on_floor = false
+var was_on_floor = false
 
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed: bool):
 	
@@ -74,10 +73,10 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	else:
 		emit_signal("follow_platform", "/")
 			
-	var original_motion = (p_linear_velocity + accumated_gravity) * get_physics_process_delta_time()
+	var original_motion = p_linear_velocity * get_physics_process_delta_time()
 	var motion = original_motion
 	
-	prev_on_floor = on_floor
+	was_on_floor = on_floor
 	on_floor = false
 	on_floor_body = RID()
 	on_ceiling = false
@@ -124,7 +123,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_ceiling = true
 				else:
 					var dot = original_motion.slide(p_up_direction).normalized().dot(collision.normal)
-					if move_on_floor_only and prev_on_floor and dot < -0.5 and p_linear_velocity.y >= 0 :
+					if move_on_floor_only and was_on_floor and dot < -0.5 and p_linear_velocity.y >= 0 :
 						print("length " + str(collision.travel.length()) + " :  " + str(original_motion.slide(Vector2(p_up_direction.y, p_up_direction.x))))
 						if collision.travel.length() < 1:
 							position = previous_pos
@@ -149,10 +148,9 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			break
 
 		p_max_slides -= 1
-	#return p_linear_velocity
 
 func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool, p_floor_max_angle: float,  p_infinite_inertia: bool):
-	if p_up_direction == Vector2.ZERO or on_floor or not prev_on_floor: return
+	if p_up_direction == Vector2.ZERO or on_floor or not was_on_floor: return
 	
 	var collision := move_and_collide(p_snap, p_infinite_inertia, false, true)
 	if collision:
