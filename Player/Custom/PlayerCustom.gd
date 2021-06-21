@@ -11,7 +11,7 @@ var AIR_FRICTION := 1000
 
 var last_normal = Vector2.ZERO
 var last_motion = Vector2.ZERO
-var CONSTANT_SPEED = false
+var CONSTANT_SPEED_ON_FLOOR = false
 var MOVE_ON_FLOOR_ONLY = true
 
 func _process(_delta):
@@ -31,7 +31,7 @@ func _physics_process(_delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
-	custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED)
+	custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR)
 
 #	custom_snap(Vector2.DOWN * 50, Vector2.UP, true, deg2rad(45), true)
 	
@@ -57,7 +57,7 @@ var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
 var was_on_floor = false
 
-func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed: bool):
+func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool):
 	
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor:
@@ -86,7 +86,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
 	
-	var first_collision = true
+	var first_slide = true
 	while (p_max_slides):
 		var previous_pos = position
 		var collision := move_and_collide(motion, p_infinite_inertia)
@@ -94,14 +94,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 		if collision:
 			motion = collision.remainder
 			last_normal = collision.normal # for debug
-			var dot_velocity = p_linear_velocity.normalized().dot(last_normal) # only apply constant speed if the overall direction is more close then the slope than the ground
-			if constant_speed and first_collision and motion != Vector2.ZERO and dot_velocity < 0 and dot_velocity > -0.72:
-				var slide = motion.slide(collision.normal).normalized()
-				first_collision = false
-				if slide != Vector2.ZERO:
-					motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.length())  # alternative use original_motion.length() to also account de y value
+
 			if p_up_direction == Vector2():
-				# all is a wall
 				on_wall = true;
 			else :
 				if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
@@ -110,6 +104,12 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					floor_velocity = collision.collider_velocity
 					var collision_object := collision.collider as CollisionObject2D
 					on_floor_body = collision_object.get_rid()
+					
+					if constant_speed_on_floor and first_slide and motion != Vector2.ZERO:
+						var slide = motion.slide(collision.normal).normalized()
+						first_slide = false
+						if slide != Vector2.ZERO:
+							motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
 					
 					if p_stop_on_slope:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
@@ -124,7 +124,6 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				else:
 					var dot = original_motion.slide(p_up_direction).normalized().dot(collision.normal)
 					if move_on_floor_only and was_on_floor and dot < -0.5 and p_linear_velocity.y >= 0 :
-						print("length " + str(collision.travel.length()) + " :  " + str(original_motion.slide(Vector2(p_up_direction.y, p_up_direction.x))))
 						if collision.travel.length() < 1:
 							position = previous_pos
 						else:
@@ -148,6 +147,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			break
 
 		p_max_slides -= 1
+		first_slide = false
 
 func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool, p_floor_max_angle: float,  p_infinite_inertia: bool):
 	if p_up_direction == Vector2.ZERO or on_floor or not was_on_floor: return

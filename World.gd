@@ -49,7 +49,7 @@ func set_mode(index: int):
 		if index == 2 or index == 3:
 			instance = PlayerClassic.instance()
 		if index == 1:
-			instance.CONSTANT_SPEED = true
+			instance.CONSTANT_SPEED_ON_FLOOR = true
 		if index == 3:
 			instance.use_build_in = true
 		if index == 4:
