@@ -135,10 +135,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					if move_on_floor_only and was_on_floor and dot < -0.5 and p_linear_velocity.y >= 0 :
 						if collision.travel.length() < 1:
 							position = previous_pos
-						else:
-							position -= collision.travel.slide(p_up_direction)
-						on_floor = true					
-						motion = (original_motion.slide(Vector2(p_up_direction.y, p_up_direction.x))) * get_physics_process_delta_time()
+						on_floor = true			
+						motion = (original_motion.slide(Vector2(p_up_direction.y, p_up_direction.x)))
 					else:
 						on_wall = true
 
