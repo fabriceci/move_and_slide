@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://World.gd" type="Script" id=1]
+[ext_resource path="res://new_dynamicfont.tres" type="DynamicFont" id=2]
 [ext_resource path="res://icon.png" type="Texture" id=3]
 [ext_resource path="res://SourceCodePro-Regular.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://Platform/platform.tscn" type="PackedScene" id=5]
@@ -55,6 +56,23 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
 "values": [ Vector2( 0, 0 ), Vector2( -500, -500 ) ]
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "Move"
+length = 2.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( -250, 0 ) ]
 }
 
 [node name="World" type="Node2D"]
@@ -178,7 +196,40 @@ position = Vector2( -300, -300 )
 [node name="AnimationPlayer" parent="Level/Platform3/KinematicBody2D" index="2"]
 anims/Move = SubResource( 7 )
 
+[node name="Platform4" parent="Level" instance=ExtResource( 5 )]
+position = Vector2( -753.976, 191.556 )
+
+[node name="KinematicBody2D" parent="Level/Platform4" index="0"]
+position = Vector2( -250, 0 )
+collision_layer = 2
+
+[node name="icon" parent="Level/Platform4/KinematicBody2D" index="0"]
+modulate = Color( 1, 0.0156863, 0.0156863, 1 )
+
+[node name="AnimationPlayer" parent="Level/Platform4/KinematicBody2D" index="2"]
+anims/Move = SubResource( 8 )
+
+[node name="CollisionShape2D2" parent="Level/Platform4/KinematicBody2D" index="3"]
+visible = false
+position = Vector2( -90.9545, -30.2604 )
+disabled = true
+
+[node name="CollisionShape2D3" parent="Level/Platform4/KinematicBody2D" index="4"]
+visible = false
+disabled = true
+
+[node name="Label" type="Label" parent="Level/Platform4/KinematicBody2D" index="5"]
+margin_top = -73.0
+margin_right = 116.0
+margin_bottom = -40.0
+custom_fonts/font = ExtResource( 2 )
+text = "Excluded"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [connection signal="item_selected" from="CanvasLayer/Control/ItemList" to="." method="_on_ItemList_item_selected"]
 
 [editable path="Level/Platform2"]
 [editable path="Level/Platform3"]
+[editable path="Level/Platform4"]

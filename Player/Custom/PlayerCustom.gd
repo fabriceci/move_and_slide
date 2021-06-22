@@ -32,7 +32,7 @@ func _physics_process(_delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
-	custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR)
+	custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR, [2])
 
 #	custom_snap(Vector2.DOWN * 50, Vector2.UP, true, deg2rad(45), true)
 	
@@ -50,6 +50,7 @@ func _draw():
 
 var on_floor := false
 var on_floor_body:=  RID()
+var on_floor_layer:int
 var on_ceiling := false
 var on_wall = false
 var on_air = false
@@ -58,15 +59,20 @@ var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
 var was_on_floor = false
 
-func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool):
+func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool, exclude_body_layer := []):
 	
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor:
-		current_floor_velocity = floor_velocity
-		if on_floor_body:
-			var bs := Physics2DServer.body_get_direct_state(on_floor_body)
-			if bs:
-				current_floor_velocity = bs.linear_velocity
+		var excluded = false
+		for layer in exclude_body_layer:
+			if on_floor_layer & (1 << layer ) == 0:
+				excluded = true
+		if not excluded:
+			current_floor_velocity = floor_velocity
+			if on_floor_body:
+				var bs := Physics2DServer.body_get_direct_state(on_floor_body)
+				if bs:
+					current_floor_velocity = bs.linear_velocity
 
 	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
 		position += current_floor_velocity * get_physics_process_delta_time()
@@ -104,6 +110,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_floor = true
 					floor_normal = collision.normal
 					floor_velocity = collision.collider_velocity
+					on_floor_layer = collision.collider.get_collision_layer()
 					var collision_object := collision.collider as CollisionObject2D
 					on_floor_body = collision_object.get_rid()
 					
@@ -142,7 +149,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				var tmp_position = position
 				if apply_constant_speed:
 					position = previous_pos
-				custom_snap(p_up_direction * -1 * 50, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia )
+				custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia )
 				if apply_constant_speed and on_floor and motion != Vector2.ZERO:
 					var slide = motion.slide(prev_floor_normal).normalized()
 					if slide != Vector2.ZERO:
