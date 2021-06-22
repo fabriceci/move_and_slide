@@ -122,10 +122,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					
 					if p_stop_on_slope:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
-							if collision.travel.length() < 1: # more precise but maybe useless
+							if collision.travel.length() < 1:
 								position = previous_pos #
-							else:
-								position -= collision.travel.slide(p_up_direction)
 							motion = Vector2.ZERO
 
 				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
