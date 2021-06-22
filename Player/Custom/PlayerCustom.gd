@@ -92,18 +92,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 		var continue_next = false
 		var previous_pos = position
 		var collision := move_and_collide(motion, p_infinite_inertia)
-		if not collision and snap != Vector2.ZERO and was_on_floor and constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and first_slide:
-			var temp = position
-			position = previous_pos
-			custom_snap(p_up_direction * -1 * 50, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia )
-			if on_floor and motion != Vector2.ZERO:
-				
-				var slide = motion.slide(prev_floor_normal).normalized()
-				if slide != Vector2.ZERO:
-					motion = slide * (original_motion.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
-					continue_next = true
-			else: # cancel the snap
-				position = temp
+
 		if collision:
 			motion = collision.remainder
 			last_normal = collision.normal # for debug
@@ -147,7 +136,20 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 						on_wall = true
 
 			motion = motion.slide(collision.normal)
-		
+		else:
+			if snap != Vector2.ZERO and was_on_floor:
+				var apply_constant_speed : bool = constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and first_slide
+				var tmp_position = position
+				if apply_constant_speed:
+					position = previous_pos
+				custom_snap(p_up_direction * -1 * 50, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia )
+				if apply_constant_speed and on_floor and motion != Vector2.ZERO:
+					var slide = motion.slide(prev_floor_normal).normalized()
+					if slide != Vector2.ZERO:
+						motion = slide * (original_motion.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
+						continue_next = true
+				elif apply_constant_speed: # cancel the snap
+					position = tmp_position
 		# debug
 		if not collision: 
 			print("air")
