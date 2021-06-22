@@ -89,7 +89,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	
 	var first_slide = true
 	while (p_max_slides):
-		var continue_next = false
+		var continue_loop = false
 		var previous_pos = position
 		var collision := move_and_collide(motion, p_infinite_inertia)
 
@@ -147,8 +147,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					var slide = motion.slide(prev_floor_normal).normalized()
 					if slide != Vector2.ZERO:
 						motion = slide * (original_motion.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
-						continue_next = true
-				elif apply_constant_speed: # cancel the snap
+						continue_loop = true
+				elif apply_constant_speed:
 					position = tmp_position
 		# debug
 		if not collision: 
@@ -158,7 +158,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			print("--")
 		if motion != Vector2(): last_motion = motion.normalized() 
 			
-		if not continue_next and (not collision or motion == Vector2()):
+		if not continue_loop and (not collision or motion == Vector2()):
 			break
 
 		p_max_slides -= 1
