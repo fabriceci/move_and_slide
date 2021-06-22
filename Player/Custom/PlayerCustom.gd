@@ -32,7 +32,7 @@ func _physics_process(_delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
-	custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR, [2])
+	custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR, [1])
 
 #	custom_snap(Vector2.DOWN * 50, Vector2.UP, true, deg2rad(45), true)
 	
@@ -65,7 +65,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	if on_floor:
 		var excluded = false
 		for layer in exclude_body_layer:
-			if on_floor_layer & (1 << layer ) == 0:
+			if on_floor_layer & (1 << layer) != 0:
 				excluded = true
 		if not excluded:
 			current_floor_velocity = floor_velocity
