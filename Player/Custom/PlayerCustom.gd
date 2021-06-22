@@ -13,16 +13,17 @@ var last_normal = Vector2.ZERO
 var last_motion = Vector2.ZERO
 var CONSTANT_SPEED_ON_FLOOR = false
 var MOVE_ON_FLOOR_ONLY = true
-
+var snap = Vector2.ZERO
 func _process(_delta):
 	update()
 
 func _physics_process(_delta: float) -> void:
 
 	velocity.y += GRAVITY_FORCE.y * _delta
-
+	snap = Vector2.UP * -50
 	if  on_floor and Input.is_action_just_pressed('ui_accept'):
 		velocity.y += -1000
+		snap = Vector2.ZERO
 		
 	var speed = RUN_SPEED if Input.is_action_pressed('run') and on_floor else NORMAL_SPEED
 	var direction = _get_direction()
@@ -82,15 +83,27 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	on_ceiling = false
 	on_wall = false
 	on_air = false
-
+	var prev_floor_normal = floor_normal
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
 	
 	var first_slide = true
 	while (p_max_slides):
+		var continue_next = false
 		var previous_pos = position
 		var collision := move_and_collide(motion, p_infinite_inertia)
-
+		if not collision and snap != Vector2.ZERO and was_on_floor and constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and first_slide:
+			var temp = position
+			position = previous_pos
+			custom_snap(p_up_direction * -1 * 50, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia )
+			if on_floor and motion != Vector2.ZERO:
+				
+				var slide = motion.slide(prev_floor_normal).normalized()
+				if slide != Vector2.ZERO:
+					motion = slide * (original_motion.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
+					continue_next = true
+			else: # cancel the snap
+				position = temp
 		if collision:
 			motion = collision.remainder
 			last_normal = collision.normal # for debug
@@ -143,7 +156,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			print("--")
 		if motion != Vector2(): last_motion = motion.normalized() 
 			
-		if  not collision or motion == Vector2():
+		if not continue_next and (not collision or motion == Vector2()):
 			break
 
 		p_max_slides -= 1
