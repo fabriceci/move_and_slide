@@ -11,20 +11,17 @@ var AIR_FRICTION := 1000
 
 var last_normal = Vector2.ZERO
 
-var cpt := 0.0
 func _physics_process(delta: float) -> void:
-	
 	velocity.y += gravity.y * delta
-	cpt += delta
 	if on_floor and  Input.is_action_just_pressed('ui_accept'):
-		
-		print("JUMP : " + str(int(cpt)))
 		velocity.y += -1000
 		
 	var speed = RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
 		velocity.x = direction.x * speed 
+	elif util_on_floor():
+		velocity.x = 0
 	else:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
@@ -113,7 +110,10 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 			print("--")
 		p_max_slides -= 1
  
-	return body_velocity
+	if not on_floor:
+		return body_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
+	else:
+		return body_velocity
 
 func _process(_delta):
 	update()
