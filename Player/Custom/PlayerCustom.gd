@@ -25,6 +25,8 @@ func _physics_process(delta: float) -> void:
 	var direction = _get_direction()
 	if direction.x:
 		velocity.x = direction.x * speed 
+	elif on_floor:
+		velocity.x = move_toward(velocity.x, 0, Global.GROUND_FRICTION)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
 

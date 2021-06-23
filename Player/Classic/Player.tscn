@@ -22,7 +22,6 @@ texture = ExtResource( 2 )
 visible = false
 position = Vector2( -0.0309181, 1.00522 )
 shape = SubResource( 1 )
-disabled = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
@@ -35,3 +34,4 @@ cast_to = Vector2( 0, 100 )
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
 shape = SubResource( 2 )
+disabled = true

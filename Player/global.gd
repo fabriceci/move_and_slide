@@ -4,6 +4,7 @@ extends Node
 var GRAVITY_FORCE := Vector2(0, 2000)
 var NORMAL_SPEED := 800
 var RUN_SPEED := 1300
+var GROUND_FRICTION := 1000
 var AIR_FRICTION := 1000
 var JUMP_FORCE := -1000
 var INFINITE_JUMP := false

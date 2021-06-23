@@ -23,6 +23,8 @@ func _physics_process(delta: float) -> void:
 	var direction = _get_direction()
 	if direction.x:
 		velocity.x = direction.x * speed 
+	elif util_on_floor():
+		velocity.x = move_toward(velocity.x, 0, Global.GROUND_FRICTION)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
 
@@ -151,7 +153,7 @@ func util_on_floor():
 func get_state_str():
 	if on_ceiling or is_on_ceiling(): return "ceil"
 	if on_wall or is_on_wall(): return "wall"
-	if on_floor or is_on_ceiling(): return "floor"
+	if on_floor or is_on_floor(): return "floor"
 	return "air"
 	
 func get_velocity_str():
