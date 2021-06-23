@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://World.gd" type="Script" id=1]
 [ext_resource path="res://new_dynamicfont.tres" type="DynamicFont" id=2]
@@ -13,10 +13,6 @@ font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=2]
 size = 12
-font_data = ExtResource( 4 )
-
-[sub_resource type="DynamicFont" id=3]
-size = 14
 font_data = ExtResource( 4 )
 
 [sub_resource type="RectangleShape2D" id=4]
@@ -101,11 +97,11 @@ __meta__ = {
 }
 
 [node name="ItemList" type="ItemList" parent="CanvasLayer/Control"]
-margin_left = 828.0
-margin_top = 24.0
-margin_right = 1003.0
-margin_bottom = 131.0
-items = [ "Custom", null, false, "Custom + const speed", null, false, "Classic GDScript", null, false, "Classic C++", null, false, "Classic PR (platform)", null, false ]
+margin_left = 842.672
+margin_top = 6.73892
+margin_right = 1017.67
+margin_bottom = 88.7389
+items = [ "Custom", null, false, "Classic GDScript", null, false, "Classic C++", null, false, "Classic PR (platform)", null, false ]
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -136,15 +132,129 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ModeLabel" type="Label" parent="CanvasLayer/Control"]
+[node name="JumpLabel" type="Label" parent="CanvasLayer/Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 802.376
-margin_top = 1.60875
-margin_right = 961.376
-margin_bottom = -13.3913
-custom_fonts/font = SubResource( 3 )
-text = "Mode:"
+margin_left = 718.977
+margin_top = 7.35039
+margin_right = 795.977
+margin_bottom = 7.35039
+custom_fonts/font = SubResource( 1 )
+text = "Infinite Jump"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="JumpBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 735.0
+margin_top = 20.0
+margin_right = 811.0
+margin_bottom = 60.0
+focus_mode = 0
+enabled_focus_mode = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StopSlopeLabel" type="Label" parent="CanvasLayer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 837.807
+margin_top = 90.6181
+margin_right = 914.807
+margin_bottom = 70.6181
+custom_fonts/font = SubResource( 1 )
+text = "Stop on slope"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StopSlopeBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 950.0
+margin_top = 82.0
+margin_right = 1026.0
+margin_bottom = 122.0
+focus_mode = 0
+size_flags_vertical = 15
+shortcut_in_tooltip = false
+pressed = true
+enabled_focus_mode = 0
+align = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="SnapLabel" type="Label" parent="CanvasLayer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 918.382
+margin_top = 119.803
+margin_right = 925.382
+margin_bottom = 99.8029
+custom_fonts/font = SubResource( 1 )
+text = "Snap"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SnapBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 951.916
+margin_top = 112.472
+margin_right = 1027.92
+margin_bottom = 152.472
+focus_mode = 0
+pressed = true
+enabled_focus_mode = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConstantSpeedLabel" type="Label" parent="CanvasLayer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 830.38
+margin_top = 150.287
+margin_right = 916.38
+margin_bottom = 130.287
+custom_fonts/font = SubResource( 1 )
+text = "Constant Speed"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConstantSpeedBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 951.511
+margin_top = 141.158
+margin_right = 1027.51
+margin_bottom = 181.158
+focus_mode = 0
+pressed = true
+enabled_focus_mode = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MoveOnFloorLabel" type="Label" parent="CanvasLayer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 795.466
+margin_top = 181.0
+margin_right = 917.466
+margin_bottom = 161.0
+custom_fonts/font = SubResource( 1 )
+text = "Move on floor only"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MoveOnFloorBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 951.916
+margin_top = 170.737
+margin_right = 1027.92
+margin_bottom = 210.737
+focus_mode = 0
+pressed = true
+enabled_focus_mode = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -242,6 +352,11 @@ __meta__ = {
 }
 
 [connection signal="item_selected" from="CanvasLayer/Control/ItemList" to="." method="_on_ItemList_item_selected"]
+[connection signal="toggled" from="CanvasLayer/Control/JumpBtn" to="." method="_on_JumpBtn_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/StopSlopeBtn" to="." method="_on_StopSlopeBtn_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/SnapBtn" to="." method="_on_SnapBtn_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/ConstantSpeedBtn" to="." method="_on_ConstantSpeedBtn_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/MoveOnFloorBtn" to="." method="_on_MoveOnFloorBtn_toggled"]
 
 [editable path="Level/Platform2"]
 [editable path="Level/Platform3"]

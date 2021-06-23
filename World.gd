@@ -3,7 +3,6 @@ extends Node2D
 onready var n_pol2D = $Level/StaticBody2D/Polygon2D
 onready var n_collisionPol2d = $Level/StaticBody2D/CollisionPolygon2D
 var current_index = -1
-var mode = ["custom", "custom + const speed", "classic GDScript", "classic c++", "classic platform PR"]
 const PlayerClassic = preload("res://Player/Classic/Player.tscn")
 const PlayerCustom = preload("res://Player/Custom/PlayerCustom.tscn")
 const PlayerPR = preload("res://Player/ClassicPR/PlayerPR.tscn")
@@ -40,27 +39,51 @@ func _on_ItemList_item_selected(index: int) -> void:
 	set_mode(index)
 
 func set_mode(index: int):
-	$CanvasLayer/Control/ModeLabel.text = "Mode :" + mode[index]
 	if current_index != index:
 		current_index = index
 		var instance: KinematicBody2D
-		if index == 0 or index == 1:
+		if index == 0:
 			instance = PlayerCustom.instance()
-		if index == 2 or index == 3:
+			ui_options(true)
+		else:
+			ui_options(false)
+		if index == 1 or index == 2:
 			instance = PlayerClassic.instance()
-		if index == 1:
-			instance.CONSTANT_SPEED_ON_FLOOR = true
-		if index == 3:
+		if index == 2:
 			instance.use_build_in = true
-		if index == 4:
+		if index == 3:
 			instance = PlayerPR.instance()
 		if has_node("Player"):
 			remove_child(get_node("Player"))
-		if index == 0 or index == 1 or index == 4:
+		if index == 0 or index == 3:
 			var _silent = instance.connect("follow_platform", self, "on_plateform_signal")
 		add_child(instance)
 		
 		instance.position = player_position
-		
+
+func ui_options(visible: bool):
+	$CanvasLayer/Control/SnapLabel.visible = visible
+	$CanvasLayer/Control/SnapBtn.visible = visible
+	$CanvasLayer/Control/ConstantSpeedBtn.visible = visible
+	$CanvasLayer/Control/ConstantSpeedLabel.visible = visible
+	$CanvasLayer/Control/MoveOnFloorBtn.visible = visible
+	$CanvasLayer/Control/MoveOnFloorLabel.visible = visible
 func on_plateform_signal(message):
 	platform_msg = message
+
+func _on_StopSlopeBtn_toggled(button_pressed: bool) -> void:
+	Global.STOP_ON_SLOPE = button_pressed
+
+
+func _on_SnapBtn_toggled(button_pressed: bool) -> void:
+	Global.APPLY_SNAP = button_pressed
+
+func _on_ConstantSpeedBtn_toggled(button_pressed: bool) -> void:
+	Global.CONSTANT_SPEED_ON_FLOOR = button_pressed
+
+func _on_MoveOnFloorBtn_toggled(button_pressed: bool) -> void:
+	Global.MOVE_ON_FLOOR_ONLY = button_pressed
+
+
+func _on_JumpBtn_toggled(button_pressed: bool) -> void:
+	Global.INFINITE_JUMP = button_pressed

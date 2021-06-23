@@ -4,35 +4,31 @@ signal follow_platform(message)
 onready var raycast := $RayCast2D
 
 var velocity := Vector2(0, 0)
-var GRAVITY_FORCE := Vector2(0, 2000)
-var NORMAL_SPEED := 800
-var RUN_SPEED := 1300
-var AIR_FRICTION := 1000
-
 var last_normal = Vector2.ZERO
 var last_motion = Vector2.ZERO
-var CONSTANT_SPEED_ON_FLOOR = false
-var MOVE_ON_FLOOR_ONLY = true
+
 var snap = Vector2.ZERO
 func _process(_delta):
 	update()
 
 func _physics_process(_delta: float) -> void:
-
-	velocity.y += GRAVITY_FORCE.y * _delta
-	snap = Vector2.UP * -50
-	if on_floor and Input.is_action_just_pressed('ui_accept'):
-		velocity.y += -1000
+	velocity.y += Global.GRAVITY_FORCE.y * _delta
+	if Global.APPLY_SNAP:
+		snap = Global.SNAP_FORCE
+	else:
+		snap = Vector2.ZERO
+	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or on_floor):
+		velocity.y += Global.JUMP_FORCE
 		snap = Vector2.ZERO
 		
-	var speed = RUN_SPEED if Input.is_action_pressed('run') and on_floor else NORMAL_SPEED
+	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and on_floor else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
 		velocity.x = direction.x * speed 
 	else:
-		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
+		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
 
-	velocity = custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR, [1])	
+	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, [1])	
 
 	if on_floor: velocity.y = 0
 	if on_ceiling and velocity.y < 0: velocity.y = 0
@@ -57,7 +53,7 @@ var FLOOR_ANGLE_THRESHOLD := 0.01
 var was_on_floor = false
 
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool, exclude_body_layer := []):
-	
+	print("custom")
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor:
 		var excluded = false
@@ -154,7 +150,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				elif apply_constant_speed:
 					position = tmp_position
 		# debug
-		if not collision: 
+		if not collision and not continue_loop: 
 			print("air")
 			on_air = true
 		else:

@@ -4,28 +4,24 @@ signal follow_platform(message)
 onready var raycast := $RayCast2D
 
 var velocity := Vector2(0, 0)
-var gravity := Vector2(0, 2000)
-var NORMAL_SPEED := 800
-var RUN_SPEED := 1300
-var AIR_FRICTION := 1000
 
 var last_normal = Vector2.ZERO
 
 func _physics_process(delta: float) -> void:
-	velocity.y += gravity.y * delta
-	if on_floor and  Input.is_action_just_pressed('ui_accept'):
-		velocity.y += -1000
+	velocity += Global.GRAVITY_FORCE * delta
+	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or on_floor):
+		velocity.y += Global.JUMP_FORCE
 		
-	var speed = RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else NORMAL_SPEED
+	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
 		velocity.x = direction.x * speed 
 	elif util_on_floor():
 		velocity.x = 0
 	else:
-		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
+		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
 
-	velocity = gd_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true)
+	velocity = gd_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
 	
 	if util_on_floor():
 		velocity.y = 0
