@@ -30,8 +30,10 @@ func _physics_process(delta: float) -> void:
 
 	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, [1])	
 
-	if on_floor: velocity.y = 0
-	if on_ceiling and velocity.y < 0: velocity.y = 0
+	if on_floor: 
+		velocity.y = 0
+	if on_ceiling and velocity.y < 0: 
+		velocity.y = 0
 	
 func _draw():
 	var icon_pos = $icon.position
@@ -53,7 +55,6 @@ var FLOOR_ANGLE_THRESHOLD := 0.01
 var was_on_floor = false
 
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool, exclude_body_layer := []):
-	print("custom")
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor:
 		var excluded = false
@@ -76,13 +77,16 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	var original_motion = p_linear_velocity * get_physics_process_delta_time()
 	var motion = original_motion
 	
+	var prev_floor_velocity = floor_velocity
+	var prev_floor_body = on_floor_body
+	var prev_floor_normal = floor_normal
 	was_on_floor = on_floor
 	on_floor = false
 	on_floor_body = RID()
 	on_ceiling = false
 	on_wall = false
 	on_air = false
-	var prev_floor_normal = floor_normal
+
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
 	
@@ -126,7 +130,10 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					if move_on_floor_only and was_on_floor and dot < -0.5 and p_linear_velocity.y >= 0 : # prevent the move against wall
 						if collision.travel.length() < 1:
 							position = previous_pos
-						on_floor = true			
+						on_floor = true
+						on_floor_body = prev_floor_body	
+						floor_velocity = prev_floor_velocity
+						floor_normal = prev_floor_normal
 						motion = Vector2.ZERO
 					elif move_on_floor_only  and dot < -0.5: # prevent to move against the wall in the air
 						motion.x = 0
