@@ -6,7 +6,7 @@ var use_build_in = false
 var velocity := Vector2(0, 0)
 
 var last_normal = Vector2.ZERO
-
+var 	was_on_floor = false
 func _physics_process(delta: float) -> void:
 	velocity += Global.GRAVITY_FORCE * delta
 	
@@ -21,11 +21,17 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
 
 	if use_build_in:
-		velocity = move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
+		if Global.APPLY_SNAP:
+			velocity = move_and_slide_with_snap(velocity, Global.SNAP_FORCE, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
+		else:
+			velocity = move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
 		last_normal = get_floor_normal()
 	else:
 		velocity = gd_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
-	
+		if Global.APPLY_SNAP:
+			custom_snap(Global.SNAP_FORCE,  Global.UP_DIRECTION, Global.STOP_ON_SLOPE, deg2rad(Global.MAX_ANGLE_DEG), true)
+		was_on_floor = util_on_floor()
+
 	if util_on_floor():
 		velocity.y = 0
 	
@@ -106,6 +112,24 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
  
 	return body_velocity
 
+func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool, p_floor_max_angle: float,  p_infinite_inertia: bool):
+	if p_up_direction == Vector2.ZERO or on_floor or not was_on_floor: return
+	
+	var collision := move_and_collide(p_snap, p_infinite_inertia, false, true)
+	if collision:
+		if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+			on_floor = true
+			floor_normal = collision.normal
+			floor_velocity = collision.collider_velocity
+			var collision_object := collision.collider as CollisionObject2D
+			on_floor_body = collision_object.get_rid()
+			var travelled = collision.travel
+			if p_stop_on_slope:
+				# move and collide may stray the object a bit because of pre un-stucking,
+				# so only ensure that motion happens on floor direction in this case.
+				travelled = p_up_direction * p_up_direction.dot(travelled);
+			
+			position += travelled
 func _process(_delta):
 	update()
 	

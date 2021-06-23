@@ -62,8 +62,6 @@ func set_mode(index: int):
 		instance.position = player_position
 
 func ui_options(visible: bool):
-	$CanvasLayer/Control/SnapLabel.visible = visible
-	$CanvasLayer/Control/SnapBtn.visible = visible
 	$CanvasLayer/Control/ConstantSpeedBtn.visible = visible
 	$CanvasLayer/Control/ConstantSpeedLabel.visible = visible
 	$CanvasLayer/Control/MoveOnFloorBtn.visible = visible

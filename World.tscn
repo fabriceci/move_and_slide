@@ -15,13 +15,13 @@ font_data = ExtResource( 4 )
 size = 12
 font_data = ExtResource( 4 )
 
-[sub_resource type="RectangleShape2D" id=4]
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 37.4828, 32.2232 )
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 155.121, 22.7225 )
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=5]
 resource_name = "Move"
 length = 2.0
 loop = true
@@ -38,7 +38,7 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ), Vector2( 0, -500 ) ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=6]
 resource_name = "Move"
 length = 2.0
 loop = true
@@ -55,7 +55,7 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ), Vector2( -500, -500 ) ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=7]
 resource_name = "Move"
 length = 2.0
 loop = true
@@ -278,14 +278,14 @@ visible = false
 texture = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/StaticBody2D1"]
-shape = SubResource( 4 )
+shape = SubResource( 3 )
 
 [node name="StaticBody2D2" type="StaticBody2D" parent="Level"]
 position = Vector2( -40.4332, -196.18 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/StaticBody2D2"]
 position = Vector2( -293.296, -23.2314 )
-shape = SubResource( 5 )
+shape = SubResource( 4 )
 
 [node name="StaticBody2D3" type="StaticBody2D" parent="Level"]
 position = Vector2( 116.718, -59.092 )
@@ -299,7 +299,7 @@ __meta__ = {
 texture = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Level/StaticBody2D3"]
-shape = SubResource( 4 )
+shape = SubResource( 3 )
 
 [node name="Platform" parent="Level" instance=ExtResource( 5 )]
 position = Vector2( -297.29, -380.845 )
@@ -308,7 +308,7 @@ position = Vector2( -297.29, -380.845 )
 position = Vector2( 1075.39, -18.7261 )
 
 [node name="AnimationPlayer" parent="Level/Platform2/KinematicBody2D" index="2"]
-anims/Move = SubResource( 6 )
+anims/Move = SubResource( 5 )
 
 [node name="Platform3" parent="Level" instance=ExtResource( 5 )]
 position = Vector2( -851.894, -125.343 )
@@ -317,7 +317,7 @@ position = Vector2( -851.894, -125.343 )
 position = Vector2( -300, -300 )
 
 [node name="AnimationPlayer" parent="Level/Platform3/KinematicBody2D" index="2"]
-anims/Move = SubResource( 7 )
+anims/Move = SubResource( 6 )
 
 [node name="Platform4" parent="Level" instance=ExtResource( 5 )]
 position = Vector2( -753.976, 191.556 )
@@ -330,7 +330,7 @@ collision_layer = 2
 modulate = Color( 1, 0.0156863, 0.0156863, 1 )
 
 [node name="AnimationPlayer" parent="Level/Platform4/KinematicBody2D" index="2"]
-anims/Move = SubResource( 8 )
+anims/Move = SubResource( 7 )
 
 [node name="CollisionShape2D2" parent="Level/Platform4/KinematicBody2D" index="3"]
 visible = false

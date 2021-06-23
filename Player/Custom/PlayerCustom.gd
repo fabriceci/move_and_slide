@@ -148,7 +148,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				var tmp_position = position
 				if apply_constant_speed:
 					position = previous_pos
-				custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia )
+				custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia)
 				if apply_constant_speed and on_floor and motion != Vector2.ZERO:
 					var slide = motion.slide(prev_floor_normal).normalized()
 					if slide != Vector2.ZERO:
