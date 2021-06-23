@@ -11,8 +11,8 @@ var snap = Vector2.ZERO
 func _process(_delta):
 	update()
 
-func _physics_process(_delta: float) -> void:
-	velocity.y += Global.GRAVITY_FORCE.y * _delta
+func _physics_process(delta: float) -> void:
+	velocity.y += Global.GRAVITY_FORCE.y * delta
 	if Global.APPLY_SNAP:
 		snap = Global.SNAP_FORCE
 	else:
