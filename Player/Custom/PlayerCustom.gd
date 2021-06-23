@@ -21,7 +21,7 @@ func _physics_process(_delta: float) -> void:
 
 	velocity.y += GRAVITY_FORCE.y * _delta
 	snap = Vector2.UP * -50
-	if  on_floor and Input.is_action_just_pressed('ui_accept'):
+	if on_floor and Input.is_action_just_pressed('ui_accept'):
 		velocity.y += -1000
 		snap = Vector2.ZERO
 		
@@ -34,6 +34,9 @@ func _physics_process(_delta: float) -> void:
 
 	velocity = custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR, [1])	
 
+	if on_floor: velocity.y = 0
+	if on_ceiling and velocity.y < 0: velocity.y = 0
+	
 func _draw():
 	var icon_pos = $icon.position
 	icon_pos.y -= 50
@@ -164,10 +167,22 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 		p_max_slides -= 1
 		first_slide = false
 	
-	# fix velocity, Is there a reason (a use case) where this would not be desired?
-	# To do: handle this according the up direction
-	if on_floor: p_linear_velocity.y = 0
-	if on_ceiling and p_linear_velocity.y < 0: p_linear_velocity.y = 0
+	# Is there a reason (a use case) where this would not be desired?
+	# However this will only work with basic up direction (left-right-up-down)
+	#if on_floor: 
+	#	if p_up_direction.x == 0:
+	#		p_linear_velocity.y = 0
+	#	else:
+	#		p_linear_velocity.x = 0
+	#if on_ceiling:
+	#	if p_up_direction.x == 0 and p_up_direction.y < 0 and p_linear_velocity.y < 0:
+	#		p_linear_velocity.y = 0
+	#	elif p_up_direction.x == 0 and p_up_direction.y > 0 and p_linear_velocity.y > 0:
+	#		p_linear_velocity.y = 0
+	#	elif p_up_direction.y == 0 and p_up_direction.x < 0 and p_linear_velocity.x < 0:
+	#		p_linear_velocity.x = 0
+	#	elif p_up_direction.y == 0 and p_up_direction.x > 0 and p_linear_velocity.x > 0:
+	#		p_linear_velocity.x = 0
 		
 	if not on_floor:
 		return p_linear_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
