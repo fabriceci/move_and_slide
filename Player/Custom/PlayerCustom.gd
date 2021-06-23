@@ -32,11 +32,7 @@ func _physics_process(_delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, AIR_FRICTION )
 
-	velocity = custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR, [1])
-	
-	if on_floor: velocity.y = 0
-	if on_ceiling and velocity.y < 0: velocity.y = 0
-	
+	velocity = custom_move_and_slide(velocity, Vector2.UP, true, 4, deg2rad(45), true, MOVE_ON_FLOOR_ONLY, CONSTANT_SPEED_ON_FLOOR, [1])	
 
 func _draw():
 	var icon_pos = $icon.position
@@ -167,6 +163,12 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 
 		p_max_slides -= 1
 		first_slide = false
+	
+	# fix velocity, Is there a reason (a use case) where this would not be desired?
+	# To do: handle this according the up direction
+	if on_floor: p_linear_velocity.y = 0
+	if on_ceiling and p_linear_velocity.y < 0: p_linear_velocity.y = 0
+		
 	if not on_floor:
 		return p_linear_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
 	else:
