@@ -28,7 +28,6 @@ func _physics_process(delta: float) -> void:
 
 	if use_build_in:
 		if Global.APPLY_SNAP:
-			print("je pass ici" + str(snap))
 			velocity = move_and_slide_with_snap(velocity, snap, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
 		else:
 			velocity = move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
