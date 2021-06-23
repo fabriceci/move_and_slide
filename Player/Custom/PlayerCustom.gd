@@ -12,7 +12,7 @@ func _process(_delta):
 	update()
 
 func _physics_process(delta: float) -> void:
-	velocity.y += Global.GRAVITY_FORCE.y * delta
+	velocity += Global.GRAVITY_FORCE * delta
 	if Global.APPLY_SNAP:
 		snap = Global.SNAP_FORCE
 	else:

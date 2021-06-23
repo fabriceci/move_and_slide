@@ -6,12 +6,18 @@ var use_build_in = false
 var velocity := Vector2(0, 0)
 
 var last_normal = Vector2.ZERO
+var snap = Vector2.ZERO
 var 	was_on_floor = false
+
 func _physics_process(delta: float) -> void:
 	velocity += Global.GRAVITY_FORCE * delta
-	
-	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or on_floor):
+	if Global.APPLY_SNAP:
+		snap = Global.SNAP_FORCE
+	else:
+		snap = Vector2.ZERO
+	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		velocity.y += Global.JUMP_FORCE
+		snap = Vector2.ZERO
 		
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
@@ -22,14 +28,15 @@ func _physics_process(delta: float) -> void:
 
 	if use_build_in:
 		if Global.APPLY_SNAP:
-			velocity = move_and_slide_with_snap(velocity, Global.SNAP_FORCE, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
+			print("je pass ici" + str(snap))
+			velocity = move_and_slide_with_snap(velocity, snap, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
 		else:
 			velocity = move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
 		last_normal = get_floor_normal()
 	else:
 		velocity = gd_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
 		if Global.APPLY_SNAP:
-			custom_snap(Global.SNAP_FORCE,  Global.UP_DIRECTION, Global.STOP_ON_SLOPE, deg2rad(Global.MAX_ANGLE_DEG), true)
+			custom_snap(snap,  Global.UP_DIRECTION, Global.STOP_ON_SLOPE, deg2rad(Global.MAX_ANGLE_DEG), true)
 		was_on_floor = util_on_floor()
 
 	if util_on_floor():

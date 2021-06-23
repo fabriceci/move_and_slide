@@ -6,12 +6,18 @@ onready var raycast := $RayCast2D
 var velocity := Vector2(0, 0)
 
 var last_normal = Vector2.ZERO
+var snap = Vector2.ZERO
 var was_on_floor = false
 
 func _physics_process(delta: float) -> void:
 	velocity += Global.GRAVITY_FORCE * delta
+	if Global.APPLY_SNAP:
+		snap = Global.SNAP_FORCE
+	else:
+		snap = Vector2.ZERO
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or on_floor):
 		velocity.y += Global.JUMP_FORCE
+		snap = Vector2.ZERO
 		
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
@@ -25,7 +31,7 @@ func _physics_process(delta: float) -> void:
 	velocity = gd_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true)
 	
 	if Global.APPLY_SNAP:
-		custom_snap(Global.SNAP_FORCE, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, deg2rad(Global.MAX_ANGLE_DEG), true)
+		custom_snap(snap, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, deg2rad(Global.MAX_ANGLE_DEG), true)
 
 	was_on_floor = on_floor
 	if util_on_floor():
