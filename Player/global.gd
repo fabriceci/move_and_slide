@@ -11,7 +11,7 @@ var INFINITE_JUMP := false
 # move and slide
 var APPLY_SNAP := true
 var SNAP_FORCE := Vector2.UP * -50
-var CONSTANT_SPEED_ON_FLOOR := false
+var CONSTANT_SPEED_ON_FLOOR := true
 var MOVE_ON_FLOOR_ONLY := true
 var STOP_ON_SLOPE := true
 var MAX_ANGLE_DEG := 45.0
