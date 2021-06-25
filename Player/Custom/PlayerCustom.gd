@@ -121,8 +121,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					
 					if p_stop_on_slope:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
-							if collision.travel.length() < 1:
-								position = previous_pos #
+							#if collision.travel.length() < 1:
+							#	position = previous_pos #
 							motion = Vector2.ZERO
 
 				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
@@ -130,8 +130,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				else:
 					var dot = original_motion.slide(p_up_direction).normalized().dot(collision.normal)
 					if move_on_floor_only and was_on_floor and dot < -0.5 and p_linear_velocity.y >= 0 : # prevent the move against wall
-						if collision.travel.length() < 1:
-							position = previous_pos
+						#if collision.travel.length() < 1:
+						#	position = previous_pos
 						on_floor = true
 						on_floor_body = prev_floor_body	
 						floor_velocity = prev_floor_velocity
@@ -158,12 +158,11 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 						continue_loop = true
 				elif apply_constant_speed:
 					position = tmp_position
-		# debug
-		if not collision and not continue_loop: 
-			print("air")
+
+		if not collision and not on_floor: 
 			on_air = true
-		else:
-			print("--")
+
+		# debug
 		if motion != Vector2(): last_motion = motion.normalized() 
 			
 		if not continue_loop and (not collision or motion == Vector2()):
