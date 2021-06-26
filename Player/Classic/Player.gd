@@ -7,7 +7,7 @@ var velocity := Vector2(0, 0)
 
 var last_normal = Vector2.ZERO
 var snap = Vector2.ZERO
-var 	was_on_floor = false
+var was_on_floor = false
 
 func _physics_process(delta: float) -> void:
 	velocity += Global.GRAVITY_FORCE * delta
@@ -18,7 +18,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed('ui_accept') and (Global.INFINITE_JUMP or util_on_floor()):
 		velocity.y += Global.JUMP_FORCE
 		snap = Vector2.ZERO
-		
+
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
@@ -71,19 +71,19 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 	floor_normal = Vector2()
 	floor_velocity = Vector2()
  
-	while (p_max_slides):
-		var collision : KinematicCollision2D
+	# No sliding on first attempt to keep motion stable when possible.
+	var sliding_enabled := false
+	for i in range(p_max_slides):
+		
 		var found_collision := false
- 
-		collision = move_and_collide(motion, p_infinite_inertia)
+		var collision := move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
 		if not collision:
 			motion = Vector2() #clear because no collision happened and motion completed
  
 		if collision :
 			last_normal = collision.normal # debug
 			found_collision = true
-			motion = collision.remainder;
- 
+
 			if up_direction == Vector2():
 				# all is a wall
 				on_wall = true;
@@ -97,22 +97,22 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 					floor_velocity = collision.collider_velocity
 				
 					if p_stop_on_slope:
-						if (body_velocity_normal + up_direction).length() < 0.01 and collision.travel.length() < 1 :
+						if (body_velocity_normal + up_direction).length() < 0.01:
 							position -= collision.travel.slide(up_direction)
 							return Vector2()
 				elif (acos(collision.normal.dot(-up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD) : #ceiling
 					on_ceiling = true;
 				else:
 					on_wall = true;
- 
-			motion = motion.slide(collision.normal);
-			body_velocity = body_velocity.slide(collision.normal);
- 
+			if sliding_enabled or not on_floor:
+				motion = collision.remainder.slide(collision.normal)
+				body_velocity = body_velocity.slide(collision.normal)
+			else:
+				motion = collision.remainder
+		sliding_enabled = true
 		if  not found_collision or motion == Vector2():
 			break
- 
-		p_max_slides -= 1
- 
+
 	return body_velocity
 
 func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool, p_floor_max_angle: float,  p_infinite_inertia: bool):

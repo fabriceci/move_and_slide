@@ -101,6 +101,7 @@ margin_left = 842.672
 margin_top = 6.73892
 margin_right = 1017.67
 margin_bottom = 88.7389
+focus_mode = 0
 items = [ "Custom", null, false, "Classic GDScript", null, false, "Classic C++", null, false, "Classic PR (platform)", null, false ]
 __meta__ = {
 "_edit_use_anchors_": false
