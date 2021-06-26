@@ -123,25 +123,33 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
 					on_ceiling = true
 				else:
-					var dot = original_motion.slide(p_up_direction).normalized().dot(collision.normal)
-					if move_on_floor_only and was_on_floor and dot < 0 and p_linear_velocity.y >= 0 : # prevent the move against wall
-						position -= collision.travel
-						on_floor = true
-						on_floor_body = prev_floor_body	
-						floor_velocity = prev_floor_velocity
-						floor_normal = prev_floor_normal
-						return Vector2.ZERO
-					elif move_on_floor_only  and dot < -0.5: # prevent to move against the wall in the air
-						motion.x = 0
-						on_wall = true
-					else:
-						on_wall = true
+					on_wall = true
+			
+			# compute motion
 			if motion != Vector2.ZERO:
+				# constant speed
 				if on_floor and constant_speed_on_floor and first_slide:
 					var slide = motion.slide(collision.normal).normalized()
 					first_slide = false
 					if slide != Vector2.ZERO:
 						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
+				# prevent to move on wall
+				if on_wall and move_on_floor_only:
+					var dot = collision.remainder.slide(collision.normal).normalized().dot(collision.normal)
+					if was_on_floor and dot < 0 and p_linear_velocity.y >= 0 : # prevent the move against wall
+						print(collision.travel)
+						position -= collision.travel
+						on_wall = false
+						on_floor = true
+						on_floor_body = prev_floor_body	
+						floor_velocity = prev_floor_velocity
+						floor_normal = prev_floor_normal
+						return Vector2.ZERO
+					elif move_on_floor_only  and dot < 0: # prevent to move against the wall in the air
+						motion = collision.remainder.slide(collision.normal)
+						motion.x = 0
+					else: # normal motion
+						motion = collision.remainder.slide(collision.normal)
 				elif sliding_enabled or not on_floor:
 					motion = collision.remainder.slide(collision.normal)
 				else:
