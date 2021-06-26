@@ -9,6 +9,8 @@ var last_normal = Vector2.ZERO
 var snap = Vector2.ZERO
 var was_on_floor = false
 
+var auto = true
+
 func _physics_process(delta: float) -> void:
 	velocity += Global.GRAVITY_FORCE * delta
 	if Global.APPLY_SNAP:
@@ -19,6 +21,11 @@ func _physics_process(delta: float) -> void:
 		velocity.y += Global.JUMP_FORCE
 		snap = Vector2.ZERO
 
+	if Input.is_action_just_pressed('ui_down'):
+		auto = not auto
+	if Input.is_action_just_pressed('ui_up'):
+		position = Vector2(-499.372375, -273.656891)
+
 	var speed = Global.RUN_SPEED if Input.is_action_pressed('run') and util_on_floor() else Global.NORMAL_SPEED
 	var direction = _get_direction()
 	if direction.x:
@@ -27,6 +34,9 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, Global.GROUND_FRICTION)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
+
+	if auto:
+		velocity.x = 800
 
 	if use_build_in:
 		if Global.APPLY_SNAP:

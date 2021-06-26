@@ -6,7 +6,8 @@ var current_index = -1
 const PlayerClassic = preload("res://Player/Classic/Player.tscn")
 const PlayerCustom = preload("res://Player/Custom/PlayerCustom.tscn")
 const PlayerPR = preload("res://Player/ClassicPR/PlayerPR.tscn")
-var player_position := Vector2(-198, -146)
+#var player_position := Vector2(-198, -146)
+var player_position := Vector2(-499.372375, -273.656891)
 var slow_mo := [1.0, 0.05, 0.005]
 var slow_mo_idx = 0
 var platform_msg = ""
@@ -20,7 +21,9 @@ func _physics_process(_delta: float) -> void:
 	if not $Player: return
 	var linear_vel : Vector2 = (player_position - $Player.global_position) / get_physics_process_delta_time()
 	player_position = $Player.global_position
-	$CanvasLayer/Control/Label.text = "Position " + str($Player.global_position) + '\n'
+	
+	$CanvasLayer/Control/Label.text = "FPS " + str(Engine.get_frames_per_second()) + '\n'
+	$CanvasLayer/Control/Label.text += "Position " + str($Player.global_position) + '\n'
 	$CanvasLayer/Control/Label.text += "Linear Vel " + str(linear_vel) + ' Length %.3f \n' % linear_vel.length()
 	$CanvasLayer/Control/Label.text += $Player.get_velocity_str() + '\n'
 	$CanvasLayer/Control/Label.text += "State: " + $Player.get_state_str()
