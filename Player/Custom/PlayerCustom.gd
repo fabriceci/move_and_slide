@@ -138,6 +138,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_wall = true
 			
 			# compute motion
+			# constant speed
 			if on_floor and constant_speed_on_floor and first_slide:
 					var slide = collision.remainder.slide(collision.normal).normalized()
 					if slide != Vector2.ZERO:
@@ -147,7 +148,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				var travel = collision.travel
 				var man_travel = position - previous_pos
 				if collision.travel.y < 0 and was_on_floor and p_linear_velocity.y >= 0 : # prevent the move against wall + TODO: change for something that works in any UP_DIRECTION
-					position -= p_up_direction * p_up_direction.dot(collision.travel) # this keep only the Y (when up direction is Vector2.UP)
+					position -= p_up_direction * p_up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
 					on_wall = false
 					on_floor = true
 					on_floor_body = prev_floor_body	
@@ -156,9 +157,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					#custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia) # need to test if really needed
 					return Vector2.ZERO
 				elif move_on_floor_only: # prevent to move against the wall in the air
-					var motion_gravity = collision.remainder
-					motion_gravity.x = 0 # TODO: change for something that works in any UP_DIRECTION
-					motion = motion_gravity.slide(collision.normal)
+					motion = p_up_direction * p_up_direction.dot(collision.remainder)
+					motion = motion.slide(collision.normal)
 			elif sliding_enabled or not on_floor:
 				motion = collision.remainder.slide(collision.normal)
 			else:
