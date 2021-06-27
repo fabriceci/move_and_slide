@@ -39,7 +39,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
 
 	if auto:
-		velocity.x = 800
+		velocity.x = 1300
 		
 	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, [1])	
 
@@ -144,14 +144,16 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
 			# prevent to move against wall
 			elif on_wall and move_on_floor_only and original_motion.normalized().dot(collision.normal) < 0:
-				if collision.travel.y > 0 and was_on_floor and p_linear_velocity.y >= 0 : # prevent the move against wall + TODO: change for something that works in any UP_DIRECTION
-					position.y -= collision.travel.y
+				var travel = collision.travel
+				var man_travel = position - previous_pos
+				if collision.travel.y < 0 and was_on_floor and p_linear_velocity.y >= 0 : # prevent the move against wall + TODO: change for something that works in any UP_DIRECTION
+					position -= p_up_direction * p_up_direction.dot(collision.travel) # this keep only the Y (when up direction is Vector2.UP)
 					on_wall = false
 					on_floor = true
 					on_floor_body = prev_floor_body	
 					floor_velocity = prev_floor_velocity
 					floor_normal = prev_floor_normal
-					custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia) # need to test if really needed
+					#custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia) # need to test if really needed
 					return Vector2.ZERO
 				elif move_on_floor_only: # prevent to move against the wall in the air
 					var motion_gravity = collision.remainder
