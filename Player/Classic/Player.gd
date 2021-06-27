@@ -36,7 +36,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
 
 	if auto:
-		velocity.x = 800
+		velocity.x = 1300
 
 	if use_build_in:
 		if Global.APPLY_SNAP:
