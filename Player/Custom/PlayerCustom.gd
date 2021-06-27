@@ -109,7 +109,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	for i in range(p_max_slides):
 		var continue_loop = false
 		var previous_pos = position
-		var collision := move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
+		var collision := move_and_collide(motion, p_infinite_inertia, true, false, false)
 
 		if collision:
 			last_normal = collision.normal # for debug
@@ -136,31 +136,29 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					on_wall = true
 			
 			# compute motion
-			if sliding_enabled or not on_floor:
+			if on_floor and constant_speed_on_floor and first_slide:
+					var slide = collision.remainder.slide(collision.normal).normalized()
+					if slide != Vector2.ZERO:
+						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
+			# prevent to move against wall
+			elif on_wall and move_on_floor_only and original_motion.normalized().dot(collision.normal) < 0:
+				if collision.travel.y > 0 and was_on_floor and p_linear_velocity.y >= 0 : # prevent the move against wall
+					position -= collision.travel
+					on_wall = false
+					on_floor = true
+					on_floor_body = prev_floor_body	
+					floor_velocity = prev_floor_velocity
+					floor_normal = prev_floor_normal
+					return Vector2.ZERO
+				elif move_on_floor_only: # prevent to move against the wall in the air
+					var motion_gravity = collision.remainder
+					motion_gravity.x = 0
+					motion = motion_gravity.slide(collision.normal)
+			elif sliding_enabled or not on_floor:
 				motion = collision.remainder.slide(collision.normal)
 			else:
 				motion = collision.remainder
-					
-			if motion != Vector2.ZERO:
-				# constant speed
-				if on_floor and constant_speed_on_floor and first_slide:
-					var slide = motion.slide(collision.normal).normalized()
-					if slide != Vector2.ZERO:
-						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
-				# prevent to move against wall
-				elif on_wall and move_on_floor_only:
-					var dot = motion.slide(collision.normal).normalized().dot(collision.normal)
-					if collision.travel.y > 0 and was_on_floor and dot < 0 and p_linear_velocity.y >= 0 : # prevent the move against wall
-						position -= collision.travel
-						on_wall = false
-						on_floor = true
-						on_floor_body = prev_floor_body	
-						floor_velocity = prev_floor_velocity
-						floor_normal = prev_floor_normal
-						return Vector2.ZERO
-					elif move_on_floor_only  and dot < 0: # prevent to move against the wall in the air
-						motion = motion.slide(collision.normal)
-						motion.x = 0
+				
 		else:
 			if snap != Vector2.ZERO and was_on_floor:
 				var apply_constant_speed : bool = constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and first_slide
