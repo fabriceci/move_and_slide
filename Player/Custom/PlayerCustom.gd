@@ -106,6 +106,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	# No sliding on first attempt to keep floor motion stable when possible.
 	var sliding_enabled := false
 	var first_slide := true
+
 	for i in range(p_max_slides):
 		var continue_loop = false
 		var previous_pos = position
@@ -125,10 +126,13 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					var collision_object := collision.collider as CollisionObject2D
 					on_floor_body = collision_object.get_rid()
 					
-					if p_stop_on_slope:
+					if p_stop_on_slope and collision.remainder.x == 0:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
+							#print("stop on slope")
 							position -= collision.travel # if we slide UP we will slide on a moving plateform (because this will switch the state to wall)
 							return Vector2()
+					elif p_stop_on_slope:
+						print(collision.remainder.x)
 
 				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
 					on_ceiling = true
@@ -143,12 +147,13 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			# prevent to move against wall
 			elif on_wall and move_on_floor_only and original_motion.normalized().dot(collision.normal) < 0:
 				if collision.travel.y > 0 and was_on_floor and p_linear_velocity.y >= 0 : # prevent the move against wall
-					position -= collision.travel
+					position.y -= collision.travel.y
 					on_wall = false
 					on_floor = true
 					on_floor_body = prev_floor_body	
 					floor_velocity = prev_floor_velocity
 					floor_normal = prev_floor_normal
+					custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia) # need to test if really needed
 					return Vector2.ZERO
 				elif move_on_floor_only: # prevent to move against the wall in the air
 					var motion_gravity = collision.remainder
