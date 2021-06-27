@@ -158,7 +158,6 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				motion = collision.remainder.slide(collision.normal)
 			else:
 				motion = collision.remainder
-				
 		else:
 			if snap != Vector2.ZERO and was_on_floor:
 				var apply_constant_speed : bool = constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and first_slide
