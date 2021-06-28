@@ -153,7 +153,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					floor_normal = prev_floor_normal
 					#custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia) # need to test if really needed
 					return Vector2.ZERO
-				elif move_on_floor_only: # prevent to move against the wall in the air
+				elif move_on_floor_only and sliding_enabled: # prevent to move against the wall in the air
 					motion = p_up_direction * p_up_direction.dot(collision.remainder)
 					motion = motion.slide(collision.normal)
 			elif sliding_enabled or not on_floor:
