@@ -128,8 +128,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					
 					if p_stop_on_slope and collision.remainder.slide(p_up_direction).length() <= 0.01:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
-							#print("stop on slope")
-							position -= collision.travel # if we slide UP we will slide on a moving plateform (because this will switch the state to wall)
+							position -= collision.travel # if we slide UP we will slide on a moving platform (because this will switch the state to wall)
 							return Vector2()
 
 				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
