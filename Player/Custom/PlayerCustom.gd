@@ -244,6 +244,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					position = tmp_position
 		
 		can_apply_constant_speed = not sliding_enabled and not can_apply_constant_speed
+		sliding_enabled = true
 
 		if not collision and not on_floor: 
 			on_air = true
