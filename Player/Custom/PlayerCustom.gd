@@ -199,12 +199,12 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				else:
 					on_wall = true
 			
-			if on_floor:
+			if not on_floor:
 				sliding_enabled = true
 			
 			# compute motion
 			# constant speed
-			if on_floor and constant_speed_on_floor and can_apply_constant_speed:
+			if on_floor and sliding_enabled and constant_speed_on_floor and can_apply_constant_speed:
 					var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 					if not slide.is_equal_approx(Vector2.ZERO):
 						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
