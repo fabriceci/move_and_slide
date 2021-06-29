@@ -205,8 +205,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			# compute motion
 			# constant speed
 			if on_floor and constant_speed_on_floor and can_apply_constant_speed:
-					var slide = collision.remainder.slide(collision.normal).normalized()
-					if slide != Vector2.ZERO:
+					var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
+					if not slide.is_equal_approx(Vector2.ZERO):
 						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
 			# prevent to move against wall
 			elif on_wall and move_on_floor_only and original_motion.normalized().dot(collision.normal) < 0:
@@ -236,23 +236,22 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					position = previous_pos
 				custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia)
 				if apply_constant_speed and on_floor and motion != Vector2.ZERO:
-					var slide = motion.slide(prev_floor_normal).normalized()
-					if slide != Vector2.ZERO:
+					var slide: Vector2 = motion.slide(prev_floor_normal).normalized()
+					if not slide.is_equal_approx(Vector2.ZERO):
 						motion = slide * (original_motion.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
 						continue_loop = true
 				elif apply_constant_speed:
 					position = tmp_position
 		
 		can_apply_constant_speed = not sliding_enabled and not can_apply_constant_speed
-		sliding_enabled = true
 
 		if not collision and not on_floor: 
 			on_air = true
 
 		# debug
-		if motion != Vector2(): last_motion = motion.normalized() 
+		if not motion.is_equal_approx(Vector2()): last_motion = motion.normalized() 
 			
-		if not continue_loop and (not collision or motion == Vector2()):
+		if not continue_loop and (not collision or motion.is_equal_approx(Vector2())):
 			break
 
 	# Is there a reason (a use case) where this would not be desired?
