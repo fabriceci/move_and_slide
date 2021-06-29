@@ -168,7 +168,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	
 	# No sliding on first attempt to keep floor motion stable when possible.
 	var sliding_enabled := false
-	var can_apply_constant_speed := false
+	var can_apply_constant_speed := true
 
 	for i in range(p_max_slides):
 		var continue_loop = false
@@ -204,7 +204,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 			
 			# compute motion
 			# constant speed
-			if on_floor and sliding_enabled and constant_speed_on_floor and can_apply_constant_speed:
+			if on_floor and constant_speed_on_floor and can_apply_constant_speed:
 					var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 					if not slide.is_equal_approx(Vector2.ZERO):
 						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
@@ -243,7 +243,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				elif apply_constant_speed:
 					position = tmp_position
 		
-		can_apply_constant_speed = not sliding_enabled and not can_apply_constant_speed
+		can_apply_constant_speed = false
 		sliding_enabled = true
 
 		if not collision and not on_floor: 
