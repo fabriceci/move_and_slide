@@ -67,6 +67,69 @@ var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
 var was_on_floor = false
 
+class CustomKinematicCollision2D:
+	var position : Vector2
+	var normal : Vector2
+	var collider : Object
+	var collider_velocity : Vector2
+	var travel : Vector2
+	var remainder : Vector2
+
+func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool, p_exclude_raycast_shapes: bool, p_test_only: bool, p_cancel_sliding: bool = true):
+	if Global.use_default_move:
+		return move_and_collide(p_motion, p_infinite_inertia, p_exclude_raycast_shapes, p_test_only)
+	else:
+		var gt := get_global_transform()
+		
+		var margin = get_safe_margin()
+		
+		var result := Physics2DTestMotionResult.new()
+		var colliding := Physics2DServer.body_test_motion(get_rid(), gt, p_motion, p_infinite_inertia, margin, result);
+		
+		var result_motion := result.motion
+		var result_remainder := result.motion_remainder
+		
+		var motion_length := p_motion.length()
+		if (motion_length > 0.00001):
+			var precision := 0.001
+
+			if (colliding and p_cancel_sliding):
+				# Can't just use margin as a threshold because collision depth is calculated on unsafe motion,
+				# so even in normal resting cases the depth can be a bit more than the margin.
+				precision += motion_length * (result.collision_unsafe_fraction - result.collision_safe_fraction)
+
+				if (result.collision_depth > margin + precision):
+					p_cancel_sliding = false
+
+			if (p_cancel_sliding):
+				# Check depth of recovery.
+				var motion_normal := p_motion / motion_length
+				var dot := result.motion.dot(motion_normal)
+				var recovery := result.motion - motion_normal * dot
+				var recovery_length := recovery.length()
+				# Fixes cases where canceling slide causes the motion to go too deep into the ground,
+				# Becauses we're only taking rest information into account and not general recovery.
+				if (recovery_length < margin + precision):
+					# Apply adjustment to motion.
+					result_motion = motion_normal * dot
+					result_remainder = p_motion - result_motion
+		
+		if (!p_test_only):
+			position += result_motion
+		
+		if colliding:
+			var collision := CustomKinematicCollision2D.new()
+			collision.position = result.collision_point
+			collision.normal = result.collision_normal
+			collision.collider = result.collider
+			collision.collider_velocity = result.collider_velocity
+			collision.travel = result_motion
+			collision.remainder = result_remainder
+			
+			return collision
+		else:
+			return null
+
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool, exclude_body_layer := []):
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor:
@@ -110,7 +173,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 	for i in range(p_max_slides):
 		var continue_loop = false
 		var previous_pos = position
-		var collision := move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
+		var collision = custom_move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
 
 		if collision:
 			last_normal = collision.normal # for debug
@@ -212,7 +275,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool, p_floor_max_angle: float,  p_infinite_inertia: bool):
 	if p_up_direction == Vector2.ZERO or on_floor or not was_on_floor: return
 	
-	var collision := move_and_collide(p_snap, p_infinite_inertia, false, true)
+	var collision = custom_move_and_collide(p_snap, p_infinite_inertia, false, true)
 	if collision:
 		if acos(collision.normal.dot(p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 			on_floor = true
