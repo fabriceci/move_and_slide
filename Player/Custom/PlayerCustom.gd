@@ -136,6 +136,9 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				else:
 					on_wall = true
 			
+			if on_floor:
+				sliding_enabled = true
+			
 			# compute motion
 			# constant speed
 			if on_floor and constant_speed_on_floor and can_apply_constant_speed:
@@ -156,7 +159,9 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 				elif move_on_floor_only and sliding_enabled: # prevent to move against the wall in the air
 					motion = p_up_direction * p_up_direction.dot(collision.remainder)
 					motion = motion.slide(collision.normal)
-			elif sliding_enabled or not on_floor:
+				else:
+					motion = collision.remainder
+			elif sliding_enabled:
 				motion = collision.remainder.slide(collision.normal)
 			else:
 				motion = collision.remainder
