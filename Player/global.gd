@@ -1,5 +1,7 @@
 extends Node
 
+var use_default_move = true
+
 # player
 var GRAVITY_FORCE := Vector2(0, 2000)
 var NORMAL_SPEED := 800
