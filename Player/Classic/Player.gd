@@ -9,7 +9,7 @@ var last_normal = Vector2.ZERO
 var snap = Vector2.ZERO
 var was_on_floor = false
 
-var auto = true
+var auto = false
 
 func _physics_process(delta: float) -> void:
 	velocity += Global.GRAVITY_FORCE * delta

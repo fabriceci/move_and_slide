@@ -9,7 +9,7 @@ var last_motion = Vector2.ZERO
 
 var snap = Vector2.ZERO
 
-var auto = true
+var auto = false
 
 func _process(_delta):
 	update()
