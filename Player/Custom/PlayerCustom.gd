@@ -228,6 +228,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 				motion = collision.remainder.slide(collision.normal)
 				if slide_on_ceiling and on_ceiling and p_linear_velocity.dot(p_up_direction) > 0:
 					p_linear_velocity = p_linear_velocity.slide(collision.normal)
+				elif slide_on_ceiling and on_ceiling: # remove x when fall to avoid acceleration
+					p_linear_velocity = p_up_direction * p_up_direction.dot(p_linear_velocity) 
 			else:
 				motion = collision.remainder
 				if on_ceiling and not slide_on_ceiling and p_linear_velocity.dot(p_up_direction) > 0:
@@ -260,23 +262,6 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 			
 		if not continue_loop and (not collision or motion.is_equal_approx(Vector2())):
 			break
-
-	# Is there a reason (a use case) where this would not be desired?
-	# However this will only work with basic up direction (left-right-up-down)
-	#if on_floor: 
-	#	if p_up_direction.x == 0:
-	#		p_linear_velocity.y = 0
-	#	else:
-	#		p_linear_velocity.x = 0
-	#if on_ceiling:
-	#	if p_up_direction.x == 0 and p_up_direction.y < 0 and p_linear_velocity.y < 0:
-	#		p_linear_velocity.y = 0
-	#	elif p_up_direction.x == 0 and p_up_direction.y > 0 and p_linear_velocity.y > 0:
-	#		p_linear_velocity.y = 0
-	#	elif p_up_direction.y == 0 and p_up_direction.x < 0 and p_linear_velocity.x < 0:
-	#		p_linear_velocity.x = 0
-	#	elif p_up_direction.y == 0 and p_up_direction.x > 0 and p_linear_velocity.x > 0:
-	#		p_linear_velocity.x = 0
 		
 	if not on_floor:
 		return p_linear_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
