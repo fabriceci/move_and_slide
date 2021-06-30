@@ -69,7 +69,7 @@ class CustomKinematicCollision2D:
 	var travel : Vector2
 	var remainder : Vector2
 
-func gd_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool, p_exclude_raycast_shapes: bool, p_test_only: bool, p_cancel_sliding: bool = true):
+func gd_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true, p_exclude_raycast_shapes: bool = true, p_test_only: bool = false, p_cancel_sliding: bool = true):
 	if Global.use_default_move:
 		return move_and_collide(p_motion, p_infinite_inertia, p_exclude_raycast_shapes, p_test_only)
 	else:
@@ -123,8 +123,8 @@ func gd_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool, p_exclude_
 			return collision
 		else:
 			return null
- 
-func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool):
+
+func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vector2.ZERO, p_stop_on_slope: bool = false, p_max_slides: int = 4, p_floor_max_angle: float = deg2rad(45), p_infinite_inertia: bool = true):
 	var body_velocity := p_linear_velocity
 	var body_velocity_normal := body_velocity.normalized()
 	var up_direction := p_up_direction.normalized()
@@ -188,7 +188,7 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_st
 
 	return body_velocity
 
-func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool, p_floor_max_angle: float,  p_infinite_inertia: bool):
+func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool = false , p_floor_max_angle: float = deg2rad(45),  p_infinite_inertia: bool = true):
 	if p_up_direction == Vector2.ZERO or on_floor or not was_on_floor: return
 	
 	var collision := move_and_collide(p_snap, p_infinite_inertia, false, true)
