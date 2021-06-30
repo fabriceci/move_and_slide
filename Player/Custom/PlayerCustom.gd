@@ -210,7 +210,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
 			# prevent to move against wall
 			elif on_wall and move_on_floor_only and original_motion.normalized().dot(collision.normal) < 0:
-				if collision.travel.y < 0 and was_on_floor and p_linear_velocity.y >= 0 : # prevent the move against wall + TODO: change for something that works in any UP_DIRECTION
+				if collision.travel.dot(p_up_direction) > 0 and was_on_floor and p_linear_velocity.dot(p_up_direction) <= 0 : # prevent the move against wall
 					position -= p_up_direction * p_up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
 					on_wall = false
 					on_floor = true
@@ -224,15 +224,16 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					motion = motion.slide(collision.normal)
 				else:
 					motion = collision.remainder
-			elif sliding_enabled and not (on_ceiling and not slide_on_ceilling and p_linear_velocity.y < 0):
+			elif sliding_enabled and not (on_ceiling and not slide_on_ceilling and p_linear_velocity.dot(p_up_direction) > 0):
 				motion = collision.remainder.slide(collision.normal)
-				if slide_on_ceilling and on_ceiling and p_linear_velocity.y < 0:
+				if slide_on_ceilling and on_ceiling and p_linear_velocity.dot(p_up_direction) > 0:
 					p_linear_velocity = p_linear_velocity.slide(collision.normal)
 			else:
 				motion = collision.remainder
-				if on_ceiling and not slide_on_ceilling and p_linear_velocity.y < 0:
-					p_linear_velocity.y = 0
-					motion.y = 0
+				if on_ceiling and not slide_on_ceilling and p_linear_velocity.dot(p_up_direction) > 0:
+					p_linear_velocity = p_linear_velocity.slide(p_up_direction)
+					motion = motion.slide(p_up_direction)
+					
 		else:
 			if snap != Vector2.ZERO and was_on_floor:
 				var apply_constant_speed : bool = constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and can_apply_constant_speed
