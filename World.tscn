@@ -146,6 +146,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="AirFrictionLabel" type="Label" parent="CanvasLayer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 719.0
+margin_top = 56.0
+margin_right = 796.0
+margin_bottom = 36.0
+custom_fonts/font = SubResource( 1 )
+text = "Air friction"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AirFrictionBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 736.087
+margin_top = 72.9733
+margin_right = 812.087
+margin_bottom = 112.973
+focus_mode = 0
+pressed = true
+enabled_focus_mode = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="JumpBtn" type="CheckButton" parent="CanvasLayer/Control"]
 margin_left = 735.0
 margin_top = 20.0
@@ -313,6 +338,14 @@ position = Vector2( -40.4332, -196.18 )
 position = Vector2( -293.296, -23.2314 )
 shape = SubResource( 4 )
 
+[node name="StaticBody2D4" type="StaticBody2D" parent="Level"]
+position = Vector2( -40.4332, -196.18 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/StaticBody2D4"]
+position = Vector2( 617.102, -87.2312 )
+rotation = -0.698132
+shape = SubResource( 4 )
+
 [node name="StaticBody2D3" type="StaticBody2D" parent="Level"]
 position = Vector2( 116.718, -59.092 )
 rotation = 0.785398
@@ -378,6 +411,7 @@ __meta__ = {
 }
 
 [connection signal="item_selected" from="CanvasLayer/Control/ItemList" to="." method="_on_ItemList_item_selected"]
+[connection signal="toggled" from="CanvasLayer/Control/AirFrictionBtn" to="." method="_on_AirFrictionBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/JumpBtn" to="." method="_on_JumpBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/StopSlopeBtn" to="." method="_on_StopSlopeBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/SnapBtn" to="." method="_on_SnapBtn_toggled"]

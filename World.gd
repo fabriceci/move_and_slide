@@ -11,6 +11,7 @@ var player_position := Vector2(-499.372375, -273.656891)
 var slow_mo := [1.0, 0.05, 0.005]
 var slow_mo_idx = 0
 var platform_msg = ""
+var tmp_air_friction = Global.AIR_FRICTION
 
 func _ready() -> void:
 	$Level/StaticBody2D/CollisionPolygon2D.polygon = $Level/StaticBody2D/Polygon2D.polygon
@@ -94,3 +95,10 @@ func _on_JumpBtn_toggled(button_pressed: bool) -> void:
 
 func _on_SlideOnCeilingBtn_toggled(button_pressed: bool) -> void:
 	Global.SLIDE_ON_CEILING = button_pressed
+
+
+func _on_AirFrictionBtn_toggled(button_pressed: bool) -> void:
+	if button_pressed:
+		Global.AIR_FRICTION = tmp_air_friction
+	else:
+		Global.AIR_FRICTION = 0
