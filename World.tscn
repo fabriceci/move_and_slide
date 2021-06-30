@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://World.gd" type="Script" id=1]
 [ext_resource path="res://new_dynamicfont.tres" type="DynamicFont" id=2]
@@ -71,6 +71,49 @@ tracks/0/keys = {
 "update": 0,
 "values": [ Vector2( 0, 0 ), Vector2( -250, 0 ) ]
 }
+
+[sub_resource type="Animation" id=8]
+resource_name = "Move"
+length = 2.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( -250, 250 ) ]
+}
+
+[sub_resource type="ConvexPolygonShape2D" id=9]
+points = PoolVector2Array( 64, 64, 0, 64, 0, 0, 64, 0 )
+
+[sub_resource type="TileSet" id=10]
+0/name = "icon.png 0"
+0/texture = ExtResource( 3 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( 0, 0, 64, 64 )
+0/tile_mode = 0
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shape_offset = Vector2( 0, 0 )
+0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+0/shape = SubResource( 9 )
+0/shape_one_way = false
+0/shape_one_way_margin = 1.0
+0/shapes = [ {
+"autotile_coord": Vector2( 0, 0 ),
+"one_way": false,
+"one_way_margin": 1.0,
+"shape": SubResource( 9 ),
+"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
+} ]
+0/z_index = 0
 
 [node name="World" type="Node2D"]
 script = ExtResource( 1 )
@@ -410,6 +453,49 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Platform5" parent="Level" instance=ExtResource( 5 )]
+position = Vector2( 2277.51, -100.316 )
+
+[node name="KinematicBody2D" parent="Level/Platform5" index="0"]
+collision_layer = 2
+
+[node name="icon" parent="Level/Platform5/KinematicBody2D" index="0"]
+visible = false
+modulate = Color( 1, 0.0156863, 0.0156863, 1 )
+
+[node name="CollisionShape2D" parent="Level/Platform5/KinematicBody2D" index="1"]
+visible = false
+position = Vector2( 0, 3.31665 )
+disabled = true
+
+[node name="AnimationPlayer" parent="Level/Platform5/KinematicBody2D" index="2"]
+anims/Move = SubResource( 8 )
+
+[node name="CollisionShape2D2" parent="Level/Platform5/KinematicBody2D" index="3"]
+visible = false
+position = Vector2( -90.9545, -30.2604 )
+disabled = true
+
+[node name="CollisionShape2D3" parent="Level/Platform5/KinematicBody2D" index="4"]
+visible = false
+disabled = true
+
+[node name="Label" type="Label" parent="Level/Platform5/KinematicBody2D" index="5"]
+margin_top = -73.0
+margin_right = 116.0
+margin_bottom = -40.0
+custom_fonts/font = ExtResource( 2 )
+text = "tilemap"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TileMap" type="TileMap" parent="Level/Platform5/KinematicBody2D" index="6"]
+tile_set = SubResource( 10 )
+collision_use_kinematic = true
+format = 1
+tile_data = PoolIntArray( 65533, 0, 0, 65534, 0, 0, 65535, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0 )
+
 [connection signal="item_selected" from="CanvasLayer/Control/ItemList" to="." method="_on_ItemList_item_selected"]
 [connection signal="toggled" from="CanvasLayer/Control/AirFrictionBtn" to="." method="_on_AirFrictionBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/JumpBtn" to="." method="_on_JumpBtn_toggled"]
@@ -422,3 +508,4 @@ __meta__ = {
 [editable path="Level/Platform2"]
 [editable path="Level/Platform3"]
 [editable path="Level/Platform4"]
+[editable path="Level/Platform5"]

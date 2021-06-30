@@ -186,8 +186,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 					floor_normal = collision.normal
 					floor_velocity = collision.collider_velocity
 					on_floor_layer = collision.collider.get_collision_layer()
-					var collision_object := collision.collider as CollisionObject2D
-					on_floor_body = collision_object.get_rid()
+					on_floor_body = collision.get_collider_rid()
 					
 					if p_stop_on_slope and collision.remainder.slide(p_up_direction).length() <= 0.01:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
@@ -277,8 +276,7 @@ func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: boo
 			on_floor = true
 			floor_normal = collision.normal
 			floor_velocity = collision.collider_velocity
-			var collision_object := collision.collider as CollisionObject2D
-			on_floor_body = collision_object.get_rid()
+			on_floor_body = collision.get_collider_rid()
 			var travelled = collision.travel
 			if p_stop_on_slope:
 				# move and collide may stray the object a bit because of pre un-stucking,
