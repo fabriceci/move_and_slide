@@ -41,12 +41,12 @@ func _physics_process(delta: float) -> void:
 	if auto:
 		velocity.x = 1300
 		
-	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, [1])	
+	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, true, [1])	
 
 	if on_floor: 
 		velocity.y = 0
-	if on_ceiling and velocity.y < 0: 
-		velocity.y = 0
+	#if on_ceiling and velocity.y < 0:
+	#	velocity.y = 0
 	
 func _draw():
 	var icon_pos = $icon.position
@@ -130,7 +130,7 @@ func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool, p_excl
 		else:
 			return null
 
-func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool, exclude_body_layer := []):
+func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, p_stop_on_slope: bool, p_max_slides: int, p_floor_max_angle: float, p_infinite_inertia: bool, move_on_floor_only: bool, constant_speed_on_floor: bool, slide_on_ceilling: bool, exclude_body_layer := []):
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor:
 		var excluded = false
@@ -224,10 +224,15 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2, 
 					motion = motion.slide(collision.normal)
 				else:
 					motion = collision.remainder
-			elif sliding_enabled:
+			elif sliding_enabled and not (on_ceiling and not slide_on_ceilling and p_linear_velocity.y < 0):
 				motion = collision.remainder.slide(collision.normal)
+				if slide_on_ceilling and on_ceiling and p_linear_velocity.y < 0:
+					p_linear_velocity = p_linear_velocity.slide(collision.normal)
 			else:
 				motion = collision.remainder
+				if on_ceiling and not slide_on_ceilling and p_linear_velocity.y < 0:
+					p_linear_velocity.y = 0
+					motion.y = 0
 		else:
 			if snap != Vector2.ZERO and was_on_floor:
 				var apply_constant_speed : bool = constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and can_apply_constant_speed
