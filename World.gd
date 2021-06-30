@@ -69,6 +69,8 @@ func ui_options(visible: bool):
 	$CanvasLayer/Control/ConstantSpeedLabel.visible = visible
 	$CanvasLayer/Control/MoveOnFloorBtn.visible = visible
 	$CanvasLayer/Control/MoveOnFloorLabel.visible = visible
+	$CanvasLayer/Control/SlideOnCeilingBtn.visible = visible
+	$CanvasLayer/Control/SlideOnCeilingLabel.visible = visible
 func on_plateform_signal(message):
 	platform_msg = message
 
@@ -88,3 +90,7 @@ func _on_MoveOnFloorBtn_toggled(button_pressed: bool) -> void:
 
 func _on_JumpBtn_toggled(button_pressed: bool) -> void:
 	Global.INFINITE_JUMP = button_pressed
+
+
+func _on_SlideOnCeilingBtn_toggled(button_pressed: bool) -> void:
+	Global.SLIDE_ON_CEILING = button_pressed

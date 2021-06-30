@@ -146,7 +146,7 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
  
 	# No sliding on first attempt to keep motion stable when possible.
 	var sliding_enabled := false
-	for i in range(p_max_slides):
+	for _i in range(p_max_slides):
 		
 		var found_collision := false
 		var collision = gd_move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)

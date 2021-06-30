@@ -249,10 +249,35 @@ __meta__ = {
 }
 
 [node name="MoveOnFloorBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 951.916
+margin_left = 952.228
 margin_top = 170.737
-margin_right = 1027.92
+margin_right = 1028.23
 margin_bottom = 210.737
+focus_mode = 0
+pressed = true
+enabled_focus_mode = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SlideOnCeilingLabel" type="Label" parent="CanvasLayer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 795.466
+margin_top = 209.377
+margin_right = 917.466
+margin_bottom = 189.377
+custom_fonts/font = SubResource( 1 )
+text = "Slide on ceiling"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SlideOnCeilingBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 952.722
+margin_top = 198.934
+margin_right = 1028.72
+margin_bottom = 239.934
 focus_mode = 0
 pressed = true
 enabled_focus_mode = 0
@@ -358,6 +383,7 @@ __meta__ = {
 [connection signal="toggled" from="CanvasLayer/Control/SnapBtn" to="." method="_on_SnapBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/ConstantSpeedBtn" to="." method="_on_ConstantSpeedBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/MoveOnFloorBtn" to="." method="_on_MoveOnFloorBtn_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/SlideOnCeilingBtn" to="." method="_on_SlideOnCeilingBtn_toggled"]
 
 [editable path="Level/Platform2"]
 [editable path="Level/Platform3"]

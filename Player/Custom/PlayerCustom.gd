@@ -41,7 +41,7 @@ func _physics_process(delta: float) -> void:
 	if auto:
 		velocity.x = 1300
 		
-	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, true, [1])	
+	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, Global.SLIDE_ON_CEILING, [1])	
 
 	if on_floor: 
 		velocity.y = 0
@@ -130,7 +130,7 @@ func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true,
 		else:
 			return null
 
-func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vector2.ZERO, p_stop_on_slope: bool = false, p_max_slides: int = 4, p_floor_max_angle: float = deg2rad(45), p_infinite_inertia: bool = true , move_on_floor_only: bool = false, constant_speed_on_floor: bool = false, slide_on_ceilling: bool = true, exclude_body_layer := []):
+func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vector2.ZERO, p_stop_on_slope: bool = false, p_max_slides: int = 4, p_floor_max_angle: float = deg2rad(45), p_infinite_inertia: bool = true , move_on_floor_only: bool = false, constant_speed_on_floor: bool = false, slide_on_ceiling: bool = true, exclude_body_layer := []):
 	var current_floor_velocity = Vector2.ZERO
 	if on_floor:
 		var excluded = false
@@ -170,7 +170,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 	var sliding_enabled := false
 	var can_apply_constant_speed := true
 
-	for i in range(p_max_slides):
+	for _i in range(p_max_slides):
 		var continue_loop = false
 		var previous_pos = position
 		var collision = custom_move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
@@ -224,13 +224,13 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 					motion = motion.slide(collision.normal)
 				else:
 					motion = collision.remainder
-			elif sliding_enabled and not (on_ceiling and not slide_on_ceilling and p_linear_velocity.dot(p_up_direction) > 0):
+			elif sliding_enabled and not (on_ceiling and not slide_on_ceiling and p_linear_velocity.dot(p_up_direction) > 0):
 				motion = collision.remainder.slide(collision.normal)
-				if slide_on_ceilling and on_ceiling and p_linear_velocity.dot(p_up_direction) > 0:
+				if slide_on_ceiling and on_ceiling and p_linear_velocity.dot(p_up_direction) > 0:
 					p_linear_velocity = p_linear_velocity.slide(collision.normal)
 			else:
 				motion = collision.remainder
-				if on_ceiling and not slide_on_ceilling and p_linear_velocity.dot(p_up_direction) > 0:
+				if on_ceiling and not slide_on_ceiling and p_linear_velocity.dot(p_up_direction) > 0:
 					p_linear_velocity = p_linear_velocity.slide(p_up_direction)
 					motion = motion.slide(p_up_direction)
 					
