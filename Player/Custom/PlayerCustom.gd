@@ -168,7 +168,9 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 	
 	# No sliding on first attempt to keep floor motion stable when possible.
 	var sliding_enabled := false
-	var can_apply_constant_speed := true
+	var first_slide := true
+	var can_apply_constant_speed := false
+	var prev_travel := Vector2()
 
 	for _i in range(p_max_slides):
 		var continue_loop = false
@@ -193,7 +195,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 							position -= collision.travel # if we slide UP we will slide on a moving platform (because this will switch the state to wall)
 							return Vector2()
 
-				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD :
+				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 					on_ceiling = true
 				else:
 					on_wall = true
@@ -206,7 +208,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 			if on_floor and constant_speed_on_floor and can_apply_constant_speed:
 					var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 					if not slide.is_equal_approx(Vector2.ZERO):
-						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
+						motion = slide * (original_motion.slide(p_up_direction).length() - collision.travel.slide(p_up_direction).length() - prev_travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
 			# prevent to move against wall
 			elif on_wall and move_on_floor_only and original_motion.normalized().dot(collision.normal) < 0:
 				if collision.travel.dot(p_up_direction) > 0 and was_on_floor and p_linear_velocity.dot(p_up_direction) <= 0 : # prevent the move against wall
@@ -236,6 +238,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 					motion = motion.slide(p_up_direction)
 					
 		else:
+			can_apply_constant_speed = first_slide
 			if snap != Vector2.ZERO and was_on_floor:
 				var apply_constant_speed : bool = constant_speed_on_floor and prev_floor_normal != Vector2.ZERO and can_apply_constant_speed
 				var tmp_position = position
@@ -250,8 +253,12 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 				elif apply_constant_speed:
 					position = tmp_position
 		
-		can_apply_constant_speed = false
 		sliding_enabled = true
+		can_apply_constant_speed = not can_apply_constant_speed and sliding_enabled
+		first_slide = false
+		
+		if collision:
+			prev_travel = collision.travel
 
 		if not collision and not on_floor: 
 			on_air = true
