@@ -94,7 +94,7 @@ func gd_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true, p_e
 
 				if (result.collision_depth > margin + precision):
 					p_cancel_sliding = false
-
+			
 			if (p_cancel_sliding):
 				# Check depth of recovery.
 				var motion_normal := p_motion / motion_length
@@ -145,11 +145,11 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
 	floor_velocity = Vector2()
  
 	# No sliding on first attempt to keep motion stable when possible.
-	var sliding_enabled := false
+	var sliding_enabled := not p_stop_on_slope
 	for _i in range(p_max_slides):
 		
 		var found_collision := false
-		var collision = gd_move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
+		var collision = move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
 		if not collision:
 			motion = Vector2() #clear because no collision happened and motion completed
  
@@ -170,7 +170,10 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
 
 					if p_stop_on_slope:
 						if (body_velocity_normal + up_direction).length() < 0.01:
-							position -= collision.travel.slide(up_direction)
+							if collision.travel.length() > get_safe_margin():
+								position -= collision.travel.slide(up_direction)
+							else:
+								position -= collision.travel
 							return Vector2()
 				elif (acos(collision.normal.dot(-up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD) : #ceiling
 					on_ceiling = true;
