@@ -89,7 +89,7 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ), Vector2( -250, 250 ), Vector2( 0, 0 ), Vector2( -250, -250 ), Vector2( 0, 0 ), Vector2( -250, 0 ), Vector2( 0, 0 ), Vector2( -250, 0 ), Vector2( 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id=9]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:position")
@@ -104,10 +104,10 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ) ]
 }
 
-[sub_resource type="ConvexPolygonShape2D" id=9]
+[sub_resource type="ConvexPolygonShape2D" id=10]
 points = PoolVector2Array( 64, 64, 0, 64, 0, 0, 64, 0 )
 
-[sub_resource type="TileSet" id=10]
+[sub_resource type="TileSet" id=11]
 0/name = "icon.png 0"
 0/texture = ExtResource( 3 )
 0/tex_offset = Vector2( 0, 0 )
@@ -118,14 +118,14 @@ points = PoolVector2Array( 64, 64, 0, 64, 0, 0, 64, 0 )
 0/navigation_offset = Vector2( 0, 0 )
 0/shape_offset = Vector2( 0, 0 )
 0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-0/shape = SubResource( 9 )
+0/shape = SubResource( 10 )
 0/shape_one_way = false
 0/shape_one_way_margin = 1.0
 0/shapes = [ {
 "autotile_coord": Vector2( 0, 0 ),
 "one_way": false,
 "one_way_margin": 1.0,
-"shape": SubResource( 9 ),
+"shape": SubResource( 10 ),
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 0/z_index = 0
@@ -207,14 +207,14 @@ __meta__ = {
 }
 
 [node name="SlowdownFallingWallBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 648.937
+margin_left = 638.178
 margin_top = 66.4704
-margin_right = 852.937
+margin_right = 852.178
 margin_bottom = 106.47
 focus_mode = 0
 pressed = true
 enabled_focus_mode = 0
-text = "Slodown falling wall"
+text = "Slowdown falling wall"
 align = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -421,7 +421,7 @@ disabled = true
 [node name="AnimationPlayer" parent="Level/Platform5/KinematicBody2D" index="2"]
 playback_speed = 1.5
 anims/Move = SubResource( 8 )
-anims/RESET = SubResource( 11 )
+anims/RESET = SubResource( 9 )
 
 [node name="CollisionShape2D2" parent="Level/Platform5/KinematicBody2D" index="3"]
 visible = false
@@ -443,7 +443,7 @@ __meta__ = {
 }
 
 [node name="TileMap" type="TileMap" parent="Level/Platform5/KinematicBody2D" index="6"]
-tile_set = SubResource( 10 )
+tile_set = SubResource( 11 )
 collision_use_parent = true
 format = 1
 tile_data = PoolIntArray( -393217, 0, 0, -327681, 0, 0, -262145, 0, 0, -196609, 0, 0, -131073, 0, 0, -65537, 0, 0, -1, 0, 0, 65532, 0, 0, 65533, 0, 0, 65534, 0, 0, 65535, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0 )
