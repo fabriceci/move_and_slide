@@ -235,6 +235,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 					wall_normal = Vector2.ZERO
 					on_floor = true
 					on_floor_body = prev_floor_body	
+					on_floor_layer = collision.collider.get_collision_layer()
 					floor_velocity = prev_floor_velocity
 					floor_normal = prev_floor_normal
 					#custom_snap(snap, p_up_direction, p_stop_on_slope, p_floor_max_angle, p_infinite_inertia) # need to test if really needed
