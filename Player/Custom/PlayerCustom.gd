@@ -40,9 +40,12 @@ func _physics_process(delta: float) -> void:
 
 	if auto:
 		velocity.x = 1300
-		
-	if Global.SLOWDOWN_FALLING_WALL and on_wall and wall_normal.normalized().dot(velocity.normalized()) <= -0.99 and velocity.y > 0:
-		velocity.y = 70
+	
+	if Global.SLOWDOWN_FALLING_WALL and on_wall and velocity.y > 0:
+		var velX = velocity.slide(Global.UP_DIRECTION).normalized()
+		var dot = wall_normal.normalized().dot(velX)
+		if is_equal_approx(dot, -1):
+			velocity.y = 70
 
 	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, Global.SLIDE_ON_CEILING, [1])	
 

@@ -29,7 +29,12 @@ func _physics_process(_delta: float) -> void:
 		$CanvasLayer/Control/Label.text += "\nSlope angle: %.3f°" % rad2deg(acos($Player.raycast.get_collision_normal().dot(Vector2.UP)))
 	if Engine.time_scale != 1.0:
 		$CanvasLayer/Control/Label.text += "\nTime scale : %.3f" % Engine.time_scale
-	$CanvasLayer/Control/Label.text += "\nPlatform: " + platform_msg
+	if current_index == 0:
+		if $Player.on_wall:
+			$CanvasLayer/Control/Label.text += "\nWall normal: " + str($Player.wall_normal)
+		elif $Player.on_floor:
+			$CanvasLayer/Control/Label.text += "\nFloor normal: " + str($Player.floor_normal)
+	$CanvasLayer/Control/Label.text += "\nPlatform: " + platform_msg	
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed('slow'):
