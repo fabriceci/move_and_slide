@@ -34,6 +34,9 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, Global.GROUND_FRICTION)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Global.AIR_FRICTION)
+		
+	if Global.SLOWDOWN_FALLING_WALL and util_on_wall() and velocity.y > 0:
+		velocity.y = 70
 
 	if auto:
 		velocity.x = 1300
@@ -149,7 +152,7 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
 	for _i in range(p_max_slides):
 		
 		var found_collision := false
-		var collision = move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
+		var collision = move_and_collide(motion, p_infinite_inertia, true, false)
 		if not collision:
 			motion = Vector2() #clear because no collision happened and motion completed
  
@@ -218,6 +221,9 @@ func _draw():
 	
 func util_on_floor():
 	return is_on_floor() or on_floor
+
+func util_on_wall():
+	return is_on_wall() or on_wall
 
 func get_state_str():
 	if on_ceiling or is_on_ceiling(): return "ceil"

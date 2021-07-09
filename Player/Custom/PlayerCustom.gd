@@ -41,6 +41,9 @@ func _physics_process(delta: float) -> void:
 	if auto:
 		velocity.x = 1300
 		
+	if Global.SLOWDOWN_FALLING_WALL and on_wall and wall_normal.normalized().dot(velocity.normalized()) <= -0.99 and velocity.y > 0:
+		velocity.y = 70
+
 	velocity = custom_move_and_slide(velocity, Global.UP_DIRECTION, Global.STOP_ON_SLOPE, 4, deg2rad(Global.MAX_ANGLE_DEG), true, Global.MOVE_ON_FLOOR_ONLY, Global.CONSTANT_SPEED_ON_FLOOR, Global.SLIDE_ON_CEILING, [1])	
 
 	if on_floor: 
@@ -66,6 +69,8 @@ var floor_normal := Vector2()
 var floor_velocity := Vector2()
 var FLOOR_ANGLE_THRESHOLD := 0.01
 var was_on_floor = false
+var wall_normal := Vector2()
+var ceilling_normal := Vector2()
 
 class CustomKinematicCollision2D:
 	var position : Vector2
@@ -145,9 +150,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 					current_floor_velocity = bs.linear_velocity
 
 	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
-		#print("move_and_collide")
-		move_and_collide(current_floor_velocity * get_physics_process_delta_time(), p_infinite_inertia, true, false, true, [on_floor_body])
-		#position += current_floor_velocity * get_physics_process_delta_time()
+		var _silent = move_and_collide(current_floor_velocity * get_physics_process_delta_time(), p_infinite_inertia, true, false)
 		emit_signal("follow_platform", str(current_floor_velocity * get_physics_process_delta_time()))
 	else:
 		emit_signal("follow_platform", "/")
@@ -166,6 +169,8 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 	on_air = false
 
 	floor_normal = Vector2()
+	wall_normal = Vector2()
+	ceilling_normal = Vector2()
 	floor_velocity = Vector2()
 	
 	# No sliding on first attempt to keep floor motion stable when possible.
@@ -177,7 +182,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 	for _i in range(p_max_slides):
 		var continue_loop = false
 		var previous_pos = position
-		var collision = move_and_collide(motion, p_infinite_inertia, true, false, not sliding_enabled)
+		var collision = move_and_collide(motion, p_infinite_inertia, true, false)
 
 		if collision:
 			last_normal = collision.normal # for debug
@@ -191,7 +196,6 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 					floor_velocity = collision.collider_velocity
 					on_floor_layer = collision.collider.get_collision_layer()
 					on_floor_body = collision.get_collider_rid()
-					print(on_floor_body.get_id())
 					
 					if p_stop_on_slope and collision.remainder.slide(p_up_direction).length() <= 0.01:
 						if (original_motion.normalized() + p_up_direction).length() < 0.01 :
@@ -202,8 +206,13 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 							return Vector2()
 
 				elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+					ceilling_normal = collision.normal
 					on_ceiling = true
 				else:
+					floor_velocity = collision.collider_velocity
+					on_floor_layer = collision.collider.get_collision_layer()
+					on_floor_body = collision.get_collider_rid()
+					wall_normal = collision.normal
 					on_wall = true
 			
 			if not on_floor:
@@ -220,6 +229,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 				if collision.travel.dot(p_up_direction) > 0 and was_on_floor and p_linear_velocity.dot(p_up_direction) <= 0 : # prevent the move against wall
 					position -= p_up_direction * p_up_direction.dot(collision.travel) # remove the x from the vector when up direction is Vector2.UP
 					on_wall = false
+					wall_normal = Vector2.ZERO
 					on_floor = true
 					on_floor_body = prev_floor_body	
 					floor_velocity = prev_floor_velocity
@@ -275,7 +285,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 		if not continue_loop and (not collision or motion.is_equal_approx(Vector2())):
 			break
 		
-	if not on_floor:
+	if not on_floor and not on_wall:
 		return p_linear_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
 	else:
 		return p_linear_velocity

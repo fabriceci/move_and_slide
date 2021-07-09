@@ -1,11 +1,8 @@
 extends Node2D
 
-onready var n_pol2D = $Level/StaticBody2D/Polygon2D
-onready var n_collisionPol2d = $Level/StaticBody2D/CollisionPolygon2D
 var current_index = -1
 const PlayerClassic = preload("res://Player/Classic/Player.tscn")
 const PlayerCustom = preload("res://Player/Custom/PlayerCustom.tscn")
-const PlayerPR = preload("res://Player/ClassicPR/PlayerPR.tscn")
 #var player_position := Vector2(-198, -146)
 var player_position := Vector2(-499.372375, -273.656891)
 var slow_mo := [1.0, 0.05, 0.005]
@@ -14,7 +11,7 @@ var platform_msg = ""
 var tmp_air_friction = Global.AIR_FRICTION
 
 func _ready() -> void:
-	$Level/StaticBody2D/CollisionPolygon2D.polygon = $Level/StaticBody2D/Polygon2D.polygon
+	$Level/Base/CollisionPolygon2D.polygon = $Level/Base/Polygon2D.polygon
 	$CanvasLayer/Control/ItemList.select(0)
 	set_mode(0)
 
@@ -55,24 +52,20 @@ func set_mode(index: int):
 			instance = PlayerClassic.instance()
 		if index == 2:
 			instance.use_build_in = true
-		if index == 3:
-			instance = PlayerPR.instance()
 		if has_node("Player"):
 			remove_child(get_node("Player"))
-		if index == 0 or index == 3:
-			var _silent = instance.connect("follow_platform", self, "on_plateform_signal")
+		if index == 0:
+			var _silent = instance.connect("follow_platform", self, "on_platform_signal")
 		add_child(instance)
 		
 		instance.position = player_position
 
 func ui_options(visible: bool):
 	$CanvasLayer/Control/ConstantSpeedBtn.visible = visible
-	$CanvasLayer/Control/ConstantSpeedLabel.visible = visible
 	$CanvasLayer/Control/MoveOnFloorBtn.visible = visible
-	$CanvasLayer/Control/MoveOnFloorLabel.visible = visible
 	$CanvasLayer/Control/SlideOnCeilingBtn.visible = visible
-	$CanvasLayer/Control/SlideOnCeilingLabel.visible = visible
-func on_plateform_signal(message):
+
+func on_platform_signal(message):
 	platform_msg = message
 
 func _on_StopSlopeBtn_toggled(button_pressed: bool) -> void:
@@ -102,3 +95,7 @@ func _on_AirFrictionBtn_toggled(button_pressed: bool) -> void:
 		Global.AIR_FRICTION = tmp_air_friction
 	else:
 		Global.AIR_FRICTION = 0
+
+
+func _on_SlowdownFallingWallBtn_toggled(button_pressed: bool) -> void:
+	Global.SLOWDOWN_FALLING_WALL = button_pressed

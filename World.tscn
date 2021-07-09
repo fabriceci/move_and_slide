@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://World.gd" type="Script" id=1]
 [ext_resource path="res://new_dynamicfont.tres" type="DynamicFont" id=2]
@@ -74,7 +74,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id=8]
 resource_name = "Move"
-length = 2.0
+length = 8.0
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:position")
@@ -83,10 +83,25 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 1, 2, 3, 4, 5, 6, 7, 8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( -250, 250 ) ]
+"values": [ Vector2( 0, 0 ), Vector2( -250, 250 ), Vector2( 0, 0 ), Vector2( -250, -250 ), Vector2( 0, 0 ), Vector2( -250, 0 ), Vector2( 0, 0 ), Vector2( -250, 0 ), Vector2( 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=11]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
 }
 
 [sub_resource type="ConvexPolygonShape2D" id=9]
@@ -145,7 +160,7 @@ margin_top = 6.73892
 margin_right = 1017.67
 margin_bottom = 88.7389
 focus_mode = 0
-items = [ "Custom", null, false, "Classic GDScript", null, false, "Classic C++", null, false, "Classic PR (platform)", null, false ]
+items = [ "Custom", null, false, "Classic GDScript", null, false, "Classic C++", null, false ]
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -162,83 +177,68 @@ __meta__ = {
 [node name="Manual" type="Label" parent="CanvasLayer/Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 522.165
-margin_top = 11.2221
-margin_right = 736.165
-margin_bottom = 64.2221
+margin_left = 468.173
+margin_top = 7.02612
+margin_right = 603.173
+margin_bottom = 78.0261
 custom_fonts/font = SubResource( 2 )
 text = "SHIFT to run on floor
 TAB to enter in slowmo
-Lines: red -> last normal
-       green -> velocity
-	       orange -> last motion"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="JumpLabel" type="Label" parent="CanvasLayer/Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 718.977
-margin_top = 7.35039
-margin_right = 795.977
-margin_bottom = 7.35039
-custom_fonts/font = SubResource( 1 )
-text = "Infinite Jump"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="AirFrictionLabel" type="Label" parent="CanvasLayer/Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 719.0
-margin_top = 56.0
-margin_right = 796.0
-margin_bottom = 36.0
-custom_fonts/font = SubResource( 1 )
-text = "Air friction"
+Lines: 
+- red -> last normal
+- green -> velocity
+- orange -> last motion"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="AirFrictionBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 736.087
-margin_top = 72.9733
-margin_right = 812.087
-margin_bottom = 112.973
+margin_left = 652.185
+margin_top = 36.1594
+margin_right = 852.185
+margin_bottom = 76.1594
 focus_mode = 0
 pressed = true
 enabled_focus_mode = 0
+text = "Air friction"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SlowdownFallingWallBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 648.937
+margin_top = 66.4704
+margin_right = 852.937
+margin_bottom = 106.47
+focus_mode = 0
+pressed = true
+enabled_focus_mode = 0
+text = "Slodown falling wall"
+align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="JumpBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 735.0
-margin_top = 20.0
-margin_right = 811.0
-margin_bottom = 60.0
+margin_left = 641.681
+margin_top = 3.73337
+margin_right = 851.681
+margin_bottom = 43.7334
 focus_mode = 0
+pressed = true
 enabled_focus_mode = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="StopSlopeLabel" type="Label" parent="CanvasLayer/Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 837.807
-margin_top = 90.6181
-margin_right = 914.807
-margin_bottom = 70.6181
-custom_fonts/font = SubResource( 1 )
-text = "Stop on slope"
+text = "Infinite Jump"
+align = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="StopSlopeBtn" type="CheckButton" parent="CanvasLayer/Control"]
+anchor_left = -2.43999
+anchor_top = 0.042807
+anchor_right = -0.16499
+anchor_bottom = 0.042807
 margin_left = 950.0
 margin_top = 82.0
 margin_right = 1026.0
@@ -248,120 +248,73 @@ size_flags_vertical = 15
 shortcut_in_tooltip = false
 pressed = true
 enabled_focus_mode = 0
+text = "Stop on slope"
 align = 1
 __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="SnapLabel" type="Label" parent="CanvasLayer/Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 918.382
-margin_top = 119.803
-margin_right = 925.382
-margin_bottom = 99.8029
-custom_fonts/font = SubResource( 1 )
+[node name="SnapBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 909.109
+margin_top = 113.328
+margin_right = 1019.11
+margin_bottom = 153.328
+focus_mode = 0
+pressed = true
+enabled_focus_mode = 0
 text = "Snap"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SnapBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 951.916
-margin_top = 112.472
-margin_right = 1027.92
-margin_bottom = 152.472
+[node name="ConstantSpeedBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 841.069
+margin_top = 142.87
+margin_right = 1020.07
+margin_bottom = 182.87
 focus_mode = 0
 pressed = true
 enabled_focus_mode = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ConstantSpeedLabel" type="Label" parent="CanvasLayer/Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 830.38
-margin_top = 150.287
-margin_right = 916.38
-margin_bottom = 130.287
-custom_fonts/font = SubResource( 1 )
 text = "Constant Speed"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ConstantSpeedBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 951.511
-margin_top = 141.158
-margin_right = 1027.51
-margin_bottom = 181.158
+[node name="MoveOnFloorBtn" type="CheckButton" parent="CanvasLayer/Control"]
+margin_left = 821.239
+margin_top = 171.593
+margin_right = 1020.24
+margin_bottom = 211.593
 focus_mode = 0
 pressed = true
 enabled_focus_mode = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="MoveOnFloorLabel" type="Label" parent="CanvasLayer/Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 795.466
-margin_top = 181.0
-margin_right = 917.466
-margin_bottom = 161.0
-custom_fonts/font = SubResource( 1 )
 text = "Move on floor only"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MoveOnFloorBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 952.228
-margin_top = 170.737
-margin_right = 1028.23
-margin_bottom = 210.737
-focus_mode = 0
-pressed = true
-enabled_focus_mode = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="SlideOnCeilingLabel" type="Label" parent="CanvasLayer/Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 795.466
-margin_top = 209.377
-margin_right = 917.466
-margin_bottom = 189.377
-custom_fonts/font = SubResource( 1 )
-text = "Slide on ceiling"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="SlideOnCeilingBtn" type="CheckButton" parent="CanvasLayer/Control"]
-margin_left = 952.722
-margin_top = 198.934
-margin_right = 1028.72
-margin_bottom = 239.934
+margin_left = 843.136
+margin_top = 202.359
+margin_right = 1020.14
+margin_bottom = 243.359
 focus_mode = 0
 pressed = true
 enabled_focus_mode = 0
+text = "Slide on ceiling"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Level" type="Node2D" parent="."]
 
-[node name="StaticBody2D" type="StaticBody2D" parent="Level"]
+[node name="Base" type="StaticBody2D" parent="Level"]
 
-[node name="Polygon2D" type="Polygon2D" parent="Level/StaticBody2D"]
+[node name="Polygon2D" type="Polygon2D" parent="Level/Base"]
 color = Color( 0.00392157, 0.00392157, 0, 1 )
 polygon = PoolVector2Array( -285.641, 266.472, -103.341, 301.689, 292.331, 189.824, 419.625, 114.555, 624.075, 116.865, 933.394, 381.085, 1483.18, 372.627, 1484.59, 304.961, 1585.62, 306.371, 1584.21, 242.934, 1677.25, 242.934, 1677.25, 180.907, 1780.16, 180.907, 1911.26, 519.236, 2014.71, 508.822, 2542.7, 156.832, 2512.35, -522.873, 3210.27, -510.735, 3240.61, 1133.91, -2318.41, 1091.43, -2391.23, -1305.75, -1644.77, -1299.68, -1323.12, 502.753, -540.25, 484.547, -540.25, 308.552, -394.598, 308.552, -406.736, 187.176 )
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Level/StaticBody2D"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Level/Base"]
 
 [node name="StaticBody2D1" type="StaticBody2D" parent="Level"]
 position = Vector2( 120.283, -47.0884 )
@@ -456,9 +409,6 @@ __meta__ = {
 [node name="Platform5" parent="Level" instance=ExtResource( 5 )]
 position = Vector2( 2277.51, -100.316 )
 
-[node name="KinematicBody2D" parent="Level/Platform5" index="0"]
-collision_layer = 2
-
 [node name="icon" parent="Level/Platform5/KinematicBody2D" index="0"]
 visible = false
 modulate = Color( 1, 0.0156863, 0.0156863, 1 )
@@ -469,7 +419,9 @@ position = Vector2( 0, 3.31665 )
 disabled = true
 
 [node name="AnimationPlayer" parent="Level/Platform5/KinematicBody2D" index="2"]
+playback_speed = 1.5
 anims/Move = SubResource( 8 )
+anims/RESET = SubResource( 11 )
 
 [node name="CollisionShape2D2" parent="Level/Platform5/KinematicBody2D" index="3"]
 visible = false
@@ -492,12 +444,13 @@ __meta__ = {
 
 [node name="TileMap" type="TileMap" parent="Level/Platform5/KinematicBody2D" index="6"]
 tile_set = SubResource( 10 )
-collision_use_kinematic = true
+collision_use_parent = true
 format = 1
-tile_data = PoolIntArray( 65533, 0, 0, 65534, 0, 0, 65535, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0 )
+tile_data = PoolIntArray( -393217, 0, 0, -327681, 0, 0, -262145, 0, 0, -196609, 0, 0, -131073, 0, 0, -65537, 0, 0, -1, 0, 0, 65532, 0, 0, 65533, 0, 0, 65534, 0, 0, 65535, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0 )
 
 [connection signal="item_selected" from="CanvasLayer/Control/ItemList" to="." method="_on_ItemList_item_selected"]
 [connection signal="toggled" from="CanvasLayer/Control/AirFrictionBtn" to="." method="_on_AirFrictionBtn_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/SlowdownFallingWallBtn" to="." method="_on_SlowdownFallingWallBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/JumpBtn" to="." method="_on_JumpBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/StopSlopeBtn" to="." method="_on_StopSlopeBtn_toggled"]
 [connection signal="toggled" from="CanvasLayer/Control/SnapBtn" to="." method="_on_SnapBtn_toggled"]
