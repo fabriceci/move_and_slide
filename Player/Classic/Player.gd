@@ -1,4 +1,5 @@
 extends KinematicBody2D
+signal follow_platform(message)
 
 onready var raycast := $RayCast2D
 var use_build_in = false
@@ -81,7 +82,7 @@ func gd_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true, p_e
 		var margin = get_safe_margin()
 		
 		var result := Physics2DTestMotionResult.new()
-		var colliding := Physics2DServer.body_test_motion(get_rid(), gt, p_motion, p_infinite_inertia, margin, result);
+		var colliding := Physics2DServer.body_test_motion(get_rid(), gt, p_motion, p_infinite_inertia, margin, result)
 		
 		var result_motion := result.motion
 		var result_remainder := result.motion_remainder
@@ -138,7 +139,10 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
 		if bs:
 			current_floor_velocity = bs.linear_velocity
  
-	var motion: Vector2 = (current_floor_velocity + p_linear_velocity) * get_physics_process_delta_time()
+	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
+		var _silent = move_and_collide(current_floor_velocity * get_physics_process_delta_time(), p_infinite_inertia, true, false)
+
+	var motion: Vector2 = p_linear_velocity * get_physics_process_delta_time()
  
 	on_floor = false
 	on_floor_body = RID()
@@ -162,7 +166,7 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
 
 			if up_direction == Vector2():
 				# all is a wall
-				on_wall = true;
+				on_wall = true
 			else :
 				if (acos(collision.normal.dot(up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD): # floor
  
@@ -178,10 +182,12 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
 							else:
 								position -= collision.travel
 							return Vector2()
-				elif (acos(collision.normal.dot(-up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD) : #ceiling
-					on_ceiling = true;
+				elif (acos(collision.normal.dot(-up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD): #ceiling
+					on_ceiling = true
 				else:
-					on_wall = true;
+					on_wall = true
+					floor_velocity = collision.collider_velocity
+					on_floor_body = collision.get_collider_rid()
 			if sliding_enabled or not on_floor:
 				motion = collision.remainder.slide(collision.normal)
 				body_velocity = body_velocity.slide(collision.normal)
@@ -191,7 +197,10 @@ func gd_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vec
 		if  not found_collision or motion == Vector2():
 			break
 
-	return body_velocity
+	if not on_floor and not on_wall:
+		return body_velocity + current_floor_velocity # Add last floor velocity when just left a moving platform
+	else:
+		return body_velocity
 
 func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool = false , p_floor_max_angle: float = deg2rad(45),  p_infinite_inertia: bool = true):
 	if p_up_direction == Vector2.ZERO or on_floor or not was_on_floor: return
@@ -207,7 +216,7 @@ func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: boo
 			if p_stop_on_slope:
 				# move and collide may stray the object a bit because of pre un-stucking,
 				# so only ensure that motion happens on floor direction in this case.
-				travelled = p_up_direction * p_up_direction.dot(travelled);
+				travelled = p_up_direction * p_up_direction.dot(travelled)
 			
 			position += travelled
 func _process(_delta):
