@@ -140,7 +140,7 @@ func custom_move_and_collide(p_motion: Vector2, p_infinite_inertia: bool = true,
 
 func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 = Vector2.ZERO, p_stop_on_slope: bool = false, p_max_slides: int = 4, p_floor_max_angle: float = deg2rad(45), p_infinite_inertia: bool = true , move_on_floor_only: bool = false, constant_speed_on_floor: bool = false, slide_on_ceiling: bool = true, exclude_body_layer := []):
 	var current_floor_velocity = Vector2.ZERO
-	if on_floor:
+	if on_floor or on_wall:
 		var excluded = false
 		for layer in exclude_body_layer:
 			if on_floor_layer & (1 << layer) != 0:
@@ -153,7 +153,9 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 					current_floor_velocity = bs.linear_velocity
 
 	if current_floor_velocity != Vector2.ZERO: # apply platform movement first
-		var _silent = move_and_collide(current_floor_velocity * get_physics_process_delta_time(), p_infinite_inertia, true, false)
+		var platform_collision = move_and_collide(current_floor_velocity * get_physics_process_delta_time(), p_infinite_inertia, true, false)
+		if platform_collision:
+			 _process_collision(platform_collision, p_up_direction, p_floor_max_angle)
 		emit_signal("follow_platform", str(current_floor_velocity * get_physics_process_delta_time()))
 	else:
 		emit_signal("follow_platform", "/")
@@ -193,8 +195,14 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 			if p_up_direction == Vector2():
 				on_wall = true
 			else :
-				if _process_collision(motion_slided_up, collision, p_up_direction, p_floor_max_angle, p_stop_on_slope, false):
-					return Vector2.ZERO
+				_process_collision(collision, p_up_direction, p_floor_max_angle)
+				if on_floor and p_stop_on_slope and collision.remainder.slide(p_up_direction).length() <= 0.01:
+					if (motion_slided_up.normalized() + p_up_direction).length() < 0.01 :
+						if collision.travel.length() > get_safe_margin():
+								position -= collision.travel.slide(p_up_direction)
+						else:
+								position -= collision.travel
+						return Vector2.ZERO
 
 			if not on_floor:
 				sliding_enabled = true
@@ -275,7 +283,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 	else:
 		return p_linear_velocity
 
-func _process_collision(motion_slided_up, collision, p_up_direction, p_floor_max_angle, p_stop_on_slope, is_snap: bool):
+func _process_collision(collision, p_up_direction, p_floor_max_angle):
 	on_floor = false
 	on_ceiling = false
 	on_wall = false
@@ -285,20 +293,6 @@ func _process_collision(motion_slided_up, collision, p_up_direction, p_floor_max
 		floor_velocity = collision.collider_velocity
 		on_floor_layer = collision.collider.get_collision_layer()
 		on_floor_body = collision.get_collider_rid()
-		
-		if p_stop_on_slope and collision.remainder.slide(p_up_direction).length() <= 0.01:
-			if (motion_slided_up.normalized() + p_up_direction).length() < 0.01 :
-				if collision.travel.length() > get_safe_margin():
-					if not is_snap:
-						position -= collision.travel.slide(p_up_direction)
-					else:
-						position += p_up_direction * p_up_direction.dot(collision.travel)
-				else:
-					if not is_snap:
-						position -= collision.travel
-					else:
-						position += collision.travel
-				return true
 
 	elif acos(collision.normal.dot(-p_up_direction)) <= p_floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		ceilling_normal = collision.normal
@@ -309,7 +303,6 @@ func _process_collision(motion_slided_up, collision, p_up_direction, p_floor_max
 		on_floor_body = collision.get_collider_rid()
 		wall_normal = collision.normal
 		on_wall = true
-	return false
 
 func custom_snap(p_snap: Vector2,  p_up_direction: Vector2, p_stop_on_slope: bool = false , p_floor_max_angle: float = deg2rad(45),  p_infinite_inertia: bool = true):
 	if p_up_direction == Vector2.ZERO or on_floor or not was_on_floor: return
