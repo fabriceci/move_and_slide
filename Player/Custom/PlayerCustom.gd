@@ -197,7 +197,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 			else :
 				_process_collision(collision, p_up_direction, p_floor_max_angle)
 				if on_floor and p_stop_on_slope and collision.remainder.slide(p_up_direction).length() <= 0.01:
-					if (motion_slided_up.normalized() + p_up_direction).length() < 0.01 :
+					if (motion.normalized() + p_up_direction).length() < 0.01 :
 						if collision.travel.length() > get_safe_margin():
 								position -= collision.travel.slide(p_up_direction)
 						else:
@@ -226,7 +226,7 @@ func custom_move_and_slide(p_linear_velocity: Vector2, p_up_direction: Vector2 =
 				else:
 					motion = collision.remainder
 			# constant speed
-			elif on_floor and  was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) > 0:
+			elif on_floor and  was_on_floor and constant_speed_on_floor and can_apply_constant_speed and motion.dot(collision.normal) < 0:
 				var slide: Vector2 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector2.ZERO):
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(p_up_direction).length() - prev_travel.slide(p_up_direction).length())  # alternative use original_motion.length() to also take account of the y value
